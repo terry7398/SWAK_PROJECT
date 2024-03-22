@@ -13,7 +13,7 @@ st.header("수학동아리 :blue[방탈출] 문제")
 
 df = conn.read(
         worksheet="시트1",
-        ttl="10s",
+        ttl="5s",
         usecols=[0,1,2,3],
         nrows=100
     )
@@ -41,7 +41,7 @@ if "ProblemContent" not in st.session_state:
 
 with st.expander("문제 추가하기"):
     with st.form("AddProblem"):
-        with st.container("ADDPROBLEM"):
+        with st.container():
             st.session_state['ProblemName'] = st.text_input("문제 이름",key="name",value="")
             st.session_state['ProblemContent'] = st.text_input("문제 내용",key="content",value="")
             st.session_state['AnswerType'] = st.text_input("답 형식",key="type",value="")

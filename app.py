@@ -12,7 +12,7 @@ st.header("수학동아리 :blue[방탈출] 문제")
 
 df = conn.read(
         worksheet="시트1",
-        ttl="5s",
+        ttl="10s",
         usecols=[0,1,2,3],
         nrows=100
     )

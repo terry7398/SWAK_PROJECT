@@ -3,7 +3,6 @@ from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import gspread
 import gspread 
-from oauth2client.service_account import ServiceAccountCredentials
 import time
 
 # Create a connection object.

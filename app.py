@@ -1,12 +1,11 @@
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
-import gspread
 import gspread 
 import time
 
 # Create a connection object.
-conn = st.connection("gsheets", type=GSheetsConnection)
+conn = st.connection("gsheets", GSheetsConnection)
 
 st.header("수학동아리 :blue[방탈출] 문제")
 
@@ -24,9 +23,14 @@ with st.expander("문제  ⤵"):
             break
         if st.button(f"{row.ProblemName}"):
             with st.container():
-                data_ = {"문제내용": row.ProblemContent,"답 형식":row.AnswerType}
-                data = pd.Series(data_)
-                st.write(data)
+                if pd.isnull(row.Example):
+                    data_ = {"문제 내용": row.ProblemContent,"답 형식":row.AnswerType}
+                    data = pd.Series(data_)
+                    st.write(data)
+                else:
+                    data_ = {"문제 내용": row.ProblemContent,"답 형식":row.AnswerType,"예시":row.Example}
+                    data = pd.Series(data_)
+                    st.write(data)
         i+=1
 
 if "ProblemName" not in st.session_state:

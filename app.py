@@ -12,8 +12,8 @@ st.header("수학동아리 :blue[방탈출]")
 
 df = conn.read(
         worksheet="시트1",
-        ttl="30s",
-        usecols=[0,1,2,3],
+        ttl="30m",
+        usecols=[0,1,2,3,4],
         nrows=100
     )
 
@@ -39,7 +39,7 @@ with story:
                 if st.session_state['StoryText'] == "":
                     st.error("스토리를 입력해 주세요")
                 else:
-                    df.Story[0] = st.session_state['StoryText']
+                    df.itertuples().Story[0] = st.session_state['StoryText']
                     conn.update(worksheet="시트1",data=df)
                     st.success("성공적으로 수정되었습니다",icon="✅")
                     

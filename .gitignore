@@ -36,3 +36,5 @@ terraform.rc
 
 #gspread api
 .streamlit/secrets.toml
+test.py
+.devcontainer

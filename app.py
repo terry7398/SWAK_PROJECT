@@ -106,7 +106,7 @@ with problem:
                                     "AnswerType" : st.session_state['AnswerType'],
                                     "Example" : st.session_state['Example']
                             }
-                        save()
+                        save(1)
                         st.success("성공적으로 추가되었습니다",icon="✅")
 
     with st.expander("JSON파일로 데이터 수정/다운로드 하기"):

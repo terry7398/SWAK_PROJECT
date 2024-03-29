@@ -58,6 +58,7 @@ with story:
                     data["Story"] = st.session_state['StoryText']
                     save(1)
                     st.success("성공적으로 수정되었습니다",icon="✅")
+                    st.rerun()
                     
 with problem:
     chat_load = False
@@ -108,6 +109,7 @@ with problem:
                             }
                         save(1)
                         st.success("성공적으로 추가되었습니다",icon="✅")
+                        st.rerun()
 
     with st.expander("JSON파일로 데이터 수정/다운로드 하기"):
         with open("./data.json",encoding="utf-8") as f:
@@ -129,6 +131,7 @@ with problem:
             json_data = json.dumps(uploaded_file.getvalue().decode("utf-8"),ensure_ascii=False)
             with open("./data.json", "w",encoding="utf-8") as f:
                 json.dump(json_data, f,ensure_ascii=False, indent=4)
+                st.rerun()
             
 with comment:
     problem_load = False

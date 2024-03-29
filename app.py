@@ -10,7 +10,7 @@ with open("./data.json","r",encoding="utf8") as f:
     data = json.load(f)
 
 if st.button("Refresh"):
-    st.experimental_rerun()
+    st.rerun()
 
 problem, story, comment = st.tabs(["Problem", "Story","Comment"])
 
@@ -145,7 +145,7 @@ with comment:
                 chat_data["chat"].remove(chat[1:])
                 st.success(f"{chat}이 리스트에서 삭제됨")
                 save(2,data=chat_data)
-                st.experimental_rerun()
+                st.rerun()
             except Exception as e:
                 st.error(f"{chat}이 리스트에서 삭제할 수 없습니다\n\n Error:{e}")
         else:

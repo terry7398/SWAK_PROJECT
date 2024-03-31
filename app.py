@@ -107,7 +107,7 @@ with problem:
                         st.success("성공적으로 추가되었습니다",icon="✅")
                         st.rerun()
 
-    with st.expander("JSON 데이터 다운로드"):
+    with st.expander("데이터 다운로드"):
         with open("./data.json",encoding="utf-8") as f:
             st.download_button(
                     label="Download JSON Data File",
@@ -120,6 +120,13 @@ with problem:
                 data=f,
                 file_name="chat_data.json",
             )
+        with open("./newspaper.docx",encoding="utf-8") as f:
+            st.download_button(
+                label="Download Newspaper file",
+                data=f,
+                file_name="newspaper.docx",
+            )
+        
             
 
 with comment:

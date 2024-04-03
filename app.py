@@ -1,19 +1,23 @@
-
 import streamlit as st
 import pandas as pd
 import time
 import json
-from io import StringIO
+import toml
+from streamlit_gsheets import GSheetsConnection
 
 st.header("수학동아리 :blue[방탈출]")
 
 with open("./data.json","r",encoding="utf-8") as f:
     a_Data = json.load(f)
+with open("./data.json","r",encoding="utf-8") as f:
+    a_DataRaw = f.read()
+with open("./chat_data.json", encoding="utf-8") as f:
+    ChatDataRaw = f.read()
 
 if st.button("Refresh"):
     st.rerun()
 
-problem, story, comment = st.tabs(["Problem", "Story","Comment"])
+problem, story, comment,development = st.tabs(["Problem", "Story","Comment","Development"])
 
 def load_ChatData():
     with open("./chat_data.json", encoding="utf-8") as f:
@@ -29,11 +33,8 @@ def save(choice, data_ = a_Data):
             json.dump(data_,f,ensure_ascii=False, indent=4)
 
 chat_load = False
-story_load = False
-problem_load = False
     
 with story:
-    problem_load = False
     chat_load = False
     if "StoryText" not in st.session_state:
         st.session_state['StoryText'] = ""
@@ -58,7 +59,6 @@ with story:
                     
 with problem:
     chat_load = False
-    story_load = False
     i = 0
     with st.expander("문제  ⤵"):
         for row in a_Data["Problem"].keys():
@@ -124,8 +124,6 @@ with problem:
             
 
 with comment:
-    problem_load = False
-    story_load = False
     chat_data = load_ChatData()
     messages = st.container(height=500)
     if chat_load == False:
@@ -145,3 +143,20 @@ with comment:
             messages.chat_message("user").write(chat)
             save(2,data_=chat_data)     
 
+
+with development:
+    if "Password" not in st.session_state:
+        st.session_state['Password'] = ""
+
+    with open("./.streamlit/secrets.toml", "r",encoding="utf-8") as f:
+        secrets = toml.load(f)
+
+    st.session_state['Password'] = st.text_input("password",value="")
+    if st.button("Google Spreadsheet save"):
+        if st.session_state['Password'] == secrets['Development']['Password']:
+            with st.spinner("Loading..."):
+                time.sleep(1)
+            conn = st.connection("gsheets", type=GSheetsConnection)
+            sheet_data = {"Chatdata" : ChatDataRaw, "AData" : a_DataRaw}
+            conn.update(worksheet="시트2", data=sheet_data)
+            st.success("성공적으로 저장되었습니다",icon="✅")

@@ -120,12 +120,6 @@ with problem:
                 data=f,
                 file_name="chat_data.json",
             )
-        with open("./XX일보.docx") as f:
-            st.download_button(
-                label="Download Newspaper file",
-                data=f,
-                file_name="xx일보.docx",
-            )
         
             
 

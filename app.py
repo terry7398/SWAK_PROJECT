@@ -9,15 +9,12 @@ st.header("수학동아리 :blue[방탈출]")
 
 with open("./data.json","r",encoding="utf-8") as f:
     a_Data = json.load(f)
-with open("./data.json","r",encoding="utf-8") as f:
-    a_DataRaw = f.read()
-with open("./chat_data.json", encoding="utf-8") as f:
-    ChatDataRaw = f.read()
+
 
 if st.button("Refresh"):
     st.rerun()
 
-problem, story, comment,development = st.tabs(["Problem", "Story","Comment","Development"])
+problem, story, comment,Resource,development = st.tabs(["Problem", "Story","Comment","Resource","Development"])
 
 def load_ChatData():
     with open("./chat_data.json", encoding="utf-8") as f:
@@ -31,6 +28,16 @@ def save(choice, data_ = a_Data):
     elif choice == 2:
         with open("./chat_data.json","w", encoding="utf-8") as f:
             json.dump(data_,f,ensure_ascii=False, indent=4)
+
+import os
+
+# 파일 업로드 함수
+def save_uploaded_file(directory, file):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    with open(os.path.join(directory, file.name), 'wb') as f:
+        f.write(file.getbuffer())
+    return st.success('파일 업로드 성공')
 
 chat_load = False
     
@@ -113,7 +120,7 @@ with problem:
                     label="Download JSON Data File",
                     data=f,
                     file_name="data.json",
-                )
+            )
         with open("./chat_data.json",encoding="utf-8") as f:
             st.download_button(
                 label="Download JSON Chat Data File",
@@ -142,7 +149,17 @@ with comment:
             chat_data["chat"].append(chat)
             messages.chat_message("user").write(chat)
             save(2,data_=chat_data)     
-
+with Resource:
+    with st.expander("이미지 업로드"):
+        img_file = st.file_uploader('이미지를 업로드 하세요.', type=['png', 'jpg'])
+    
+    if img_file is not None:
+        save_uploaded_file("source",img_file)
+    with st.expander("이미지"):
+        file_names = os.listdir("./source")
+        for filename in file_names:
+            st.write(filename[:-4])
+            st.image("./source/"+filename)
 
 with development:
     if "Password" not in st.session_state:
@@ -156,6 +173,10 @@ with development:
         if st.session_state['Password'] == secrets['Development']['Password']:
             with st.spinner("Loading..."):
                 time.sleep(1)
+            with open("./data.json","r",encoding="utf-8") as f:
+                a_DataRaw = f.read()
+            with open("./chat_data.json", encoding="utf-8") as f:
+                ChatDataRaw = f.read()    
             conn = st.connection("gsheets", type=GSheetsConnection)
             sheet_data = {"Chatdata" : ChatDataRaw, "AData" : a_DataRaw}
             conn.update(worksheet="시트2", data=sheet_data)

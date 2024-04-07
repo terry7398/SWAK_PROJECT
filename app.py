@@ -151,7 +151,7 @@ with comment:
             save(2,data_=chat_data)     
 with Resource:
     with st.expander("이미지 업로드"):
-        img_file = st.file_uploader('이미지를 업로드 하세요.', type=['png', 'jpg'])
+        img_file = st.file_uploader(':red[파일 이름을 해당 사진의 이름으로 저장하고 업로드 하세요!!!]', type=['png', 'jpg'])
     
     if img_file is not None:
         save_uploaded_file("source",img_file)

@@ -158,7 +158,11 @@ with Resource:
     with st.expander("이미지"):
         file_names = os.listdir("./source")
         for filename in file_names:
-            st.write(filename[:-4])
+            st.download_button(
+                label=filename[:-4] + " 다운로드",
+                data=open("./source/"+filename, "rb"),
+                file_name=filename,
+            )
             st.image("./source/"+filename)
 
 with development:

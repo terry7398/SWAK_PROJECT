@@ -10,16 +10,20 @@ st.header("수학동아리 :blue[방탈출]")
 with open("./data.json","r",encoding="utf-8") as f:
     a_Data = json.load(f)
 
-
 if st.button("Refresh"):
     st.rerun()
 
-problem, story, comment,Resource,development = st.tabs(["Problem", "Story","Comment","Resource","Development"])
+problem, story, comments,Resources,Materials,development = st.tabs(["Problem", "Story","Comments","Resources","Materials","Development"])
 
 def load_ChatData():
     with open("./chat_data.json", encoding="utf-8") as f:
         chatData = json.load(f)
     return chatData
+
+def load_Materials_ChatData():
+    with open("./Materials_chat_data.json", encoding="utf-8") as f:
+        MaterialschatData = json.load(f)
+    return MaterialschatData
 
 def save(choice, data_ = a_Data):
     if choice == 1:
@@ -28,10 +32,11 @@ def save(choice, data_ = a_Data):
     elif choice == 2:
         with open("./chat_data.json","w", encoding="utf-8") as f:
             json.dump(data_,f,ensure_ascii=False, indent=4)
-
+    elif choice == 3:
+        with open("./Materials_chat_data.json","w", encoding="utf-8") as f:
+            json.dump(data_,f,ensure_ascii=False, indent=4)
 import os
 
-# 파일 업로드 함수
 def save_uploaded_file(directory, file):
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -40,9 +45,11 @@ def save_uploaded_file(directory, file):
     return st.success('파일 업로드 성공')
 
 chat_load = False
-    
+materials_chat_load = False
+
 with story:
     chat_load = False
+    materials_chat_load = False
     if "StoryText" not in st.session_state:
         st.session_state['StoryText'] = ""
     story_text = a_Data['Story']
@@ -66,6 +73,7 @@ with story:
                     
 with problem:
     chat_load = False
+    materials_chat_load = False
     i = 0
     with st.expander("문제  ⤵"):
         for row in a_Data["Problem"].keys():
@@ -127,17 +135,22 @@ with problem:
                 data=f,
                 file_name="chat_data.json",
             )
+        with open("./Materials_chat_data.json",encoding="utf-8") as f:
+            st.download_button(
+                label="Download JSON Materials Data File",
+                data=f,
+                file_name="Materials_chat_data.json",
+            )
         
-            
-
-with comment:
+with comments:
+    materials_chat_load = False
     chat_data = load_ChatData()
     messages = st.container(height=500)
     if chat_load == False:
         for i in chat_data["chat"]:
             messages.chat_message("user").write(i)
         chat_load = True
-    if chat := st.chat_input("메시지를 입력하세요"):
+    if chat := st.chat_input("메시지를 입력하세요",key="chat"):
         if chat[0] == "!":
             try:
                 chat_data["chat"].remove(chat[1:])
@@ -149,7 +162,9 @@ with comment:
             chat_data["chat"].append(chat)
             messages.chat_message("user").write(chat)
             save(2,data_=chat_data)     
-with Resource:
+with Resources:
+    materials_chat_load = False
+    chat_load = False
     with st.expander("이미지 업로드"):
         img_file = st.file_uploader(':red[파일 이름을 해당 사진의 이름으로 저장하고 업로드 하세요!!!]', type=['png', 'jpg'])
     
@@ -165,7 +180,31 @@ with Resource:
             )
             st.image("./source/"+filename)
 
+with Materials:
+    chat_load = False
+    Materials_chat_data = load_Materials_ChatData()
+    messages_ = st.container(height=500)
+    if materials_chat_load == False:
+        for i in Materials_chat_data["chat"]:
+            messages_.chat_message("user").write(i)
+        materials_chat_load = True
+    if chat_ := st.chat_input("메시지를 입력하세요",key="Meterials_chat"):
+        if chat_[0] == "!":
+            try:
+                Materials_chat_data["chat"].remove(chat_[1:])
+                save(3,data_=Materials_chat_data)
+                st.rerun()
+            except Exception as e:
+                st.error(f"{chat_}이 리스트에서 삭제할 수 없습니다\n\n Error:{e}")
+        else:
+            Materials_chat_data["chat"].append(chat_)
+            messages_.chat_message("user").write(chat_)
+            save(3,data_=Materials_chat_data)
+    
+
 with development:
+    materials_chat_load = False
+    chat_load = False
     if "Password" not in st.session_state:
         st.session_state['Password'] = ""
 

@@ -220,7 +220,9 @@ with development:
                 a_DataRaw = f.read()
             with open("./chat_data.json", encoding="utf-8") as f:
                 ChatDataRaw = f.read()    
+            with open("./Materials_chat_data.json", encoding="utf-8") as f:
+                MaterialsChatDataRaw = f.read()  
             conn = st.connection("gsheets", type=GSheetsConnection)
-            sheet_data = {"Chatdata" : ChatDataRaw, "AData" : a_DataRaw}
+            sheet_data = {"Chatdata" : ChatDataRaw, "AData" : a_DataRaw,"Materialdata" : MaterialsChatDataRaw}
             conn.update(worksheet="시트2", data=sheet_data)
             st.success("성공적으로 저장되었습니다",icon="✅")

@@ -20,11 +20,6 @@ def load_ChatData():
         chatData = json.load(f)
     return chatData
 
-def load_Materials_ChatData():
-    with open("./Materials_chat_data.json", encoding="utf-8") as f:
-        MaterialschatData = json.load(f)
-    return MaterialschatData
-
 def save(choice, data_ = a_Data):
     if choice == 1:
         with open("./data.json","w",encoding="UTF-8") as f:
@@ -135,12 +130,6 @@ with problem:
                 data=f,
                 file_name="chat_data.json",
             )
-        with open("./Materials_chat_data.json",encoding="utf-8") as f:
-            st.download_button(
-                label="Download JSON Materials Data File",
-                data=f,
-                file_name="Materials_chat_data.json",
-            )
         
 with comments:
     materials_chat_load = False
@@ -182,24 +171,26 @@ with Resources:
 
 with Materials:
     chat_load = False
-    Materials_chat_data = load_Materials_ChatData()
-    messages_ = st.container(height=500)
-    if materials_chat_load == False:
-        for i in Materials_chat_data["chat"]:
-            messages_.chat_message("user").write(i)
-        materials_chat_load = True
-    if chat_ := st.chat_input("메시지를 입력하세요",key="Meterials_chat"):
-        if chat_[0] == "!":
-            try:
-                Materials_chat_data["chat"].remove(chat_[1:])
-                save(3,data_=Materials_chat_data)
-                st.rerun()
-            except Exception as e:
-                st.error(f"{chat_}이 리스트에서 삭제할 수 없습니다\n\n Error:{e}")
-        else:
-            Materials_chat_data["chat"].append(chat_)
-            messages_.chat_message("user").write(chat_)
-            save(3,data_=Materials_chat_data)
+    if "MaterialText" not in st.session_state:
+        st.session_state['MaterialText'] = ""
+    material_text = a_Data['Material']
+    with st.expander("준비물"):
+        st.write(material_text)
+    with st.expander("준비물 수정하기"):
+        with st.form("준비물 수정하기"):
+            with st.container():
+                st.session_state['MaterialText'] = st.text_area("준비물",key="material",value="")
+                Story_submitted = st.form_submit_button("준비물 수정하기")
+            if Story_submitted:
+                with st.spinner("Loading..."):
+                    time.sleep(1)
+                if st.session_state['MaterialText'] == "":
+                    st.error("준비물을 입력해 주세요")
+                else:
+                    a_Data["Material"] = st.session_state['MaterialText']
+                    save(1)
+                    st.success("성공적으로 수정되었습니다",icon="✅")
+                    st.rerun()
     
 
 with development:
@@ -220,9 +211,7 @@ with development:
                 a_DataRaw = f.read()
             with open("./chat_data.json", encoding="utf-8") as f:
                 ChatDataRaw = f.read()    
-            with open("./Materials_chat_data.json", encoding="utf-8") as f:
-                MaterialsChatDataRaw = f.read()  
             conn = st.connection("gsheets", type=GSheetsConnection)
-            sheet_data = {"Chatdata" : ChatDataRaw, "AData" : a_DataRaw,"Materialdata" : MaterialsChatDataRaw}
+            sheet_data = {"Chatdata" : ChatDataRaw, "AData" : a_DataRaw}
             conn.update(worksheet="시트2", data=sheet_data)
             st.success("성공적으로 저장되었습니다",icon="✅")

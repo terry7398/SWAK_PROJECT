@@ -1,14 +1,29 @@
 import streamlit as st
+from st_aggrid import AgGrid, GridOptionsBuilder, ColumnsAutoSizeMode
 import pandas as pd
 import time
 import json
 import toml
 from streamlit_gsheets import GSheetsConnection
+import numpy as np
 
+st.set_page_config(layout="wide")
 st.header("수학동아리 :blue[방탈출]")
 
 with open("./data.json","r",encoding="utf-8") as f:
     a_Data = json.load(f)
+
+material_data = pd.read_csv("material.csv")
+material_df = material_data
+material_df["가격"].fillna(0,inplace=True)
+material_df["총 가격"].fillna(0,inplace=True)
+# for i in range(len(material_df["/"])):
+#     print(material_df["/"][i])
+#     if pd.isna(material_df["/"][i]) and i < 0:
+#         material_df["/"][i] = material_data["/"][i-1]
+material_df.fillna("",inplace=True)
+# 
+# material_df = material_data.set_index("N")
 
 if st.button("Refresh"):
     st.rerun()
@@ -151,6 +166,7 @@ with comments:
             chat_data["chat"].append(chat)
             messages.chat_message("user").write(chat)
             save(2,data_=chat_data)     
+
 with Resources:
     materials_chat_load = False
     chat_load = False
@@ -176,6 +192,7 @@ with Materials:
     material_text = a_Data['Material']
     with st.expander("준비물"):
         st.write(material_text)
+        AgGrid(data=material_df, columns_auto_size_mode=ColumnsAutoSizeMode.FIT_CONTENTS)
     with st.expander("준비물 수정하기"):
         with st.form("준비물 수정하기"):
             with st.container():
@@ -191,6 +208,7 @@ with Materials:
                     save(1)
                     st.success("성공적으로 수정되었습니다",icon="✅")
                     st.rerun()
+    
     
 
 with development:

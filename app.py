@@ -15,8 +15,8 @@ with open("./data.json","r",encoding="utf-8") as f:
 
 material_data = pd.read_csv("material.csv")
 material_df = material_data
-material_df["가격"].fillna(0,inplace=True)
-material_df["총 가격"].fillna(0,inplace=True)
+# material_df["가격"].fillna(0,inplace=True)
+# material_df["총 가격"].fillna(0,inplace=True)
 # for i in range(len(material_df["/"])):
 #     print(material_df["/"][i])
 #     if pd.isna(material_df["/"][i]) and i < 0:
@@ -196,7 +196,7 @@ with Materials:
     with st.expander("준비물 수정하기"):
         with st.form("준비물 수정하기"):
             with st.container():
-                st.session_state['MaterialText'] = st.text_area("준비물",key="material",value="")
+                st.session_state['MaterialText'] = st.text_area("준비물",key="material",value="",height=1000)
                 Story_submitted = st.form_submit_button("준비물 수정하기")
             if Story_submitted:
                 with st.spinner("Loading..."):
@@ -209,8 +209,6 @@ with Materials:
                     st.success("성공적으로 수정되었습니다",icon="✅")
                     st.rerun()
     
-    
-
 with development:
     materials_chat_load = False
     chat_load = False

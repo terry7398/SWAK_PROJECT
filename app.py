@@ -2,60 +2,21 @@ import streamlit as st
 from st_aggrid import AgGrid, GridOptionsBuilder, ColumnsAutoSizeMode
 import pandas as pd
 import time
-import json
-import toml
 from streamlit_gsheets import GSheetsConnection
-import numpy as np
+import os
+from init import *
 
 st.set_page_config(layout="wide")
 st.header("수학동아리 :blue[방탈출]")
 
-with open("./data.json","r",encoding="utf-8") as f:
-    a_Data = json.load(f)
-
-material_data = pd.read_csv("material.csv")
-material_df = material_data
-# material_df["가격"].fillna(0,inplace=True)
-# material_df["총 가격"].fillna(0,inplace=True)
-# for i in range(len(material_df["/"])):
-#     print(material_df["/"][i])
-#     if pd.isna(material_df["/"][i]) and i < 0:
-#         material_df["/"][i] = material_data["/"][i-1]
-material_df.fillna("",inplace=True)
-# 
-# material_df = material_data.set_index("N")
-
-if st.button("Refresh"):
-    st.rerun()
-
 problem, story, comments,Resources,Materials,development = st.tabs(["Problem", "Story","Comments","Resources","Materials","Development"])
 
-def load_ChatData():
-    with open("./chat_data.json", encoding="utf-8") as f:
-        chatData = json.load(f)
-    return chatData
-
-def save(choice, data_ = a_Data):
-    if choice == 1:
-        with open("./data.json","w",encoding="UTF-8") as f:
-            json.dump(data_,f,ensure_ascii=False, indent=4)
-    elif choice == 2:
-        with open("./chat_data.json","w", encoding="utf-8") as f:
-            json.dump(data_,f,ensure_ascii=False, indent=4)
-    elif choice == 3:
-        with open("./Materials_chat_data.json","w", encoding="utf-8") as f:
-            json.dump(data_,f,ensure_ascii=False, indent=4)
-import os
-
-def save_uploaded_file(directory, file):
+def save_uploaded_file(directory, file):    
     if not os.path.exists(directory):
         os.makedirs(directory)
     with open(os.path.join(directory, file.name), 'wb') as f:
         f.write(file.getbuffer())
     return st.success('파일 업로드 성공')
-
-chat_load = False
-materials_chat_load = False
 
 with story:
     chat_load = False
@@ -215,18 +176,12 @@ with development:
     if "Password" not in st.session_state:
         st.session_state['Password'] = ""
 
-    with open("./.streamlit/secrets.toml", "r",encoding="utf-8") as f:
-        secrets = toml.load(f)
-
     st.session_state['Password'] = st.text_input("password",value="")
     if st.button("Google Spreadsheet save"):
         if st.session_state['Password'] == secrets['Development']['Password']:
             with st.spinner("Loading..."):
                 time.sleep(1)
-            with open("./data.json","r",encoding="utf-8") as f:
-                a_DataRaw = f.read()
-            with open("./chat_data.json", encoding="utf-8") as f:
-                ChatDataRaw = f.read()    
+                
             conn = st.connection("gsheets", type=GSheetsConnection)
             sheet_data = {"Chatdata" : ChatDataRaw, "AData" : a_DataRaw}
             conn.update(worksheet="시트2", data=sheet_data)

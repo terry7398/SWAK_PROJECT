@@ -96,7 +96,7 @@ class app():
                                     st.success("예약이 완료되었습니다.",icon="✅")
                                     self.save() 
                                     conn = st.connection("gsheets", type=GSheetsConnection)
-                                    sheet_data = {"Data" : data}
+                                    sheet_data = {"Data" : self.data}
                                     conn.update(worksheet="시트1", data=sheet_data)
                     except:
                         st.error("이미 예약된 날짜입니다.")

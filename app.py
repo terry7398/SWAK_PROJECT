@@ -50,7 +50,7 @@ class app():
                     studentNum = st.selectbox("학생 수를 선택하세요",self.studentNumber)
                     self.load_data()
                     for i in range(1,6):
-                        st.session_state[f'Student{i}'] = st.text_input(f"{i}번 학생의 학번과 이름을 입력하세요")
+                        st.session_state[f'Student{i}'] = st.text_input(f"{i}번 학생의 학번과 이름을 입력하세요 (ex:10101홍길동)")
                     reservation_submitted = st.form_submit_button("예약하기")
                     
                 if reservation_submitted:
@@ -70,7 +70,7 @@ class app():
                             students = [st.session_state[f'Student{i}'] for i in range(1,int(studentNum[0]) + 1)]
                             try:
                                 for i in range(0,int(studentNum[0])):
-                                    studentsData.append({str(students[i][:5]) : students[i][5:]})
+                                    studentsData.append({int(students[i][:5]) : students[i][5:]})
                             except:
                                 st.error("학번과 이름을 모두 입력해 주세요.")
                                 is_error = True

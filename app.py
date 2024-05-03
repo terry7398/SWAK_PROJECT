@@ -2,6 +2,7 @@ import streamlit as st
 import time
 from streamlit_gsheets import GSheetsConnection
 import json
+import toml
 
 class app():
     def __init__(self):
@@ -22,6 +23,8 @@ class app():
         for i in range(1,6):
             if f"Student{i}" not in st.session_state:
                 st.session_state[f'Student{i}'] = ""
+        with open("./.streamlit/secrets.toml", "r",encoding="utf-8") as f:
+            self.secrets = toml.load(f)
 
     #파일 불러오기
     def load_data(self):
@@ -90,9 +93,13 @@ class app():
                                             "studentNum" : studentNum, 
                                             "students" : studentsData}
                                     self.data["신청"][slot].append(data)
-                                    st.success("예약이 완료되었습니다.")
-                                    self.save()
+                                    st.success("예약이 완료되었습니다.",icon="✅")
+                                    self.save() 
+                                    conn = st.connection("gsheets", type=GSheetsConnection)
+                                    sheet_data = {"Data" : data}
+                                    conn.update(worksheet="시트1", data=sheet_data)
                     except:
                         st.error("이미 예약된 날짜입니다.")
+
 app = app()                
 app.reservation()

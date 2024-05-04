@@ -55,9 +55,10 @@ class app():
             json.dump(self.data,f,ensure_ascii=False,indent=4)
         
     def currentReservation(self):
+        self.load_data()
         with self.current_reservation:
             with st.container():
-                st.subheader(":blue[아침] (7시 50분~)")
+                st.subheader(":blue[아침] (7시 53분~)")
                 for i in range(5):
                     is_reservated = False
                     date = self.data["일정"]["아침"][i]
@@ -74,7 +75,6 @@ class app():
                                     for key in i["students"]:
                                         num = [int(ke) for ke in key.keys()]
                                         studentId.append(int(num[0]))
-                                    studentId.sort()
                                     index = 0
                                     for k in studentId:
                                         st.write(k ," : " + i["students"][index][str(k)])
@@ -85,7 +85,30 @@ class app():
                             st.write("")
 
             with st.container():
-                st.subheader(":blue[점심]")           
+                st.subheader(":blue[점심] (12시 37분~)")
+                for i in range(5):
+                    is_reservated = False
+                    date = self.data["일정"]["점심"][i]
+                    for k in self.data["신청"]["점심"]:
+                        if k["date"] == date:
+                            is_reservated = True
+                    if is_reservated:
+                        with st.expander(self.data["일정"]["점심"][i] + "   :red[예약됨]"):
+                            date = self.data["일정"]["점심"][i]
+                            for i in self.data["신청"]["점심"]:
+                                if i["date"] == date:
+                                    st.write("학생 수 : "+i["studentNum"])
+                                    studentId = []
+                                    for key in i["students"]:
+                                        num = [int(ke) for ke in key.keys()]
+                                        studentId.append(int(num[0]))
+                                    index = 0
+                                    for k in studentId:
+                                        st.write(k ," : " + i["students"][index][str(k)])
+                                        index += 1
+                    else:
+                        with st.expander(self.data["일정"]["점심"][i] + " :blue[예약가능]"):
+                            st.write("")
         
 
     def reservation(self):

@@ -118,7 +118,7 @@ class app():
                 if st.button("Delete",key=f"confirm{n}"):
                     if ps == self.secrets["Password"]["confirmPassword"]:
                         st.success("성공적으로 삭제되었습니다",icon="✅")
-                        return True 
+                        return True
                     else:
                         st.error("비밀번호가 틀렸습니다.")
                         return False
@@ -152,6 +152,8 @@ class app():
         with self.current_reservation:
             with st.container():
                 st.subheader(":blue[아침] (7시 53분~)")
+                l = 1
+                o = 100
                 for i in range(5):
                     is_reservated = False
                     date = self.data["일정"]["아침"][i]
@@ -161,8 +163,7 @@ class app():
                     if is_reservated:
                         with st.expander(self.data["일정"]["아침"][i] + "   :red[예약됨]"):
                             date = self.data["일정"]["아침"][i]
-                            l = 1
-                            o = 100
+                            
                             for i in self.data["신청"]["아침"]:
                                 if i["date"] == date:
                                     st.write("학생 수 : "+i["studentNum"])
@@ -175,7 +176,7 @@ class app():
                                         st.write(k ," : " + i["students"][index][str(k)])
                                         index += 1
                                     self.confirmReservation(l,1)
-                                    self.deleteReservation(o,2,1,date,)
+                                    self.deleteReservation(o,2,1,date)
                                     l += 1
                                     o += 1
 
@@ -185,6 +186,8 @@ class app():
 
             with st.container():
                 st.subheader(":blue[점심] (12시 37분~)")
+                l = 1000
+                o = 10000
                 for i in range(5):
                     is_reservated = False
                     date = self.data["일정"]["점심"][i]
@@ -194,8 +197,6 @@ class app():
                     if is_reservated:
                         with st.expander(self.data["일정"]["점심"][i] + "   :red[예약됨]"):
                             date = self.data["일정"]["점심"][i]
-                            l = 1000
-                            o = 10000
                             for i in self.data["신청"]["점심"]:  
                                 if i["date"] == date:
                                     st.write("학생 수 : "+i["studentNum"])
@@ -291,19 +292,19 @@ class app():
                                         
                                     #저장
                                     if is_error == False:
-                                        self.data["날짜"][slot].remove(date)
-                                        data = {"date" : date, 
-                                                "studentNum" : studentNum, 
-                                                "students" : studentsData}
-                                        self.data["신청"][slot].append(data)
                                         ip = str(self.getRemoteIp())
                                         if ip in self.ip["ip"] and ip != None:
                                             is_error = True
-                                            st.error("이미 예약했습니다")
+                                            st.error("이미 예약했습니다 다른 학생이 예약해 주세요")
                                         if ip == None:
                                             is_error = True
-                                            st.error(f"에러발생 다시 시도해 주세요")
+                                            st.error("에러발생 다시 시도해 주세요")
                                         if is_error == False:
+                                            self.data["날짜"][slot].remove(date)
+                                            data = {"date" : date,
+                                                "studentNum" : studentNum,
+                                                "students" : studentsData}  
+                                            self.data["신청"][slot].append(data)
                                             self.ip["ip"].append(ip)
                                             st.success("예약이 완료되었습니다.",icon="✅")
                                             self.saveData()

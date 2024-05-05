@@ -3,6 +3,8 @@ import time
 from streamlit_gsheets import GSheetsConnection
 import json
 import toml
+from streamlit import runtime
+from streamlit.runtime.scriptrunner import get_script_run_ctx
 
 class app():
     def __init__(self):
@@ -17,6 +19,9 @@ class app():
         if st.button("새로고침"):
             st.rerun()
 
+        if st.button("get ip"):
+            st.markdown(f"The remote ip is :red[{self.getRemoteIp()}]")
+
         #탭 설정
         self.reservation_, self.current_reservation = st.tabs(["예약하기", "예약 상황 확인하기"]) 
 
@@ -25,6 +30,8 @@ class app():
         self.slots = ["아침","점심"]
         self.studentNumber = [f"{i}명" for i in range(4,6)]
         self.data = None
+        self.ip = None
+        self.load_ip()
         self.load_data()
         for i in range(1,6):
             if f"Student{i}" not in st.session_state:
@@ -35,7 +42,26 @@ class app():
     #파일 불러오기
     def load_data(self):
         with open("./data.json",encoding="utf-8") as f:
-            self.data = json.load(f)        
+            self.data = json.load(f)      
+    def load_ip(self):
+        with open("./ip.json",encoding="utf-8") as f:
+            self.ip = json.load(f)
+
+    #ip추출
+    @staticmethod
+    def getRemoteIp() -> str:
+        try:
+            ctx = get_script_run_ctx()
+            if ctx is None:
+                return None
+
+            session_info = runtime.get_instance().get_client(ctx.session_id)
+            if session_info is None:
+                return None
+        except:
+            return None
+
+        return session_info.request.remote_ip
 
     #학번 검사
     @staticmethod
@@ -58,12 +84,15 @@ class app():
             return False
 
     #로컬 파일 저장
-    def save(self):
+    def saveData(self):
         with open("./data.json","w",encoding="utf-8") as f:
             json.dump(self.data,f,ensure_ascii=False,indent=4)
+    def saveIpData(self):
+        with open("./ip.json","w",encoding="utf-8") as f:
+            json.dump(self.ip,f,ensure_ascii=False,indent=4)
     
     #구글 스프레드시트 저장
-    def saveGoogleSP(self):    
+    def saveGoogleSP(self):
         conn = st.connection("gsheets", type=GSheetsConnection)
         sheet_data = {"Data" : self.data}
         conn.update(worksheet="시트1", data=sheet_data)
@@ -107,12 +136,14 @@ class app():
                         del self.data["신청"]["아침"][i]
                         self.data["날짜"]["아침"].append(date)
                         self.save()
+                        self.saveGoogleSP()
             elif slot == 2:
                 for i in range(len(self.data["신청"]["점심"])):
                     if self.data["신청"]["점심"][i]["date"] == date:
                         del self.data["신청"]["점심"][i]
                         self.data["날짜"]["점심"].append(date)
                         self.save()
+                        self.saveGoogleSP()
 
     #예약 상황 확인하기
     def currentReservation(self):
@@ -262,8 +293,16 @@ class app():
                                                 "studentNum" : studentNum, 
                                                 "students" : studentsData}
                                         self.data["신청"][slot].append(data)
-                                        st.success("예약이 완료되었습니다.",icon="✅")
-                                        self.save()
+                                        ip = self.getRemoteIp()
+                                        if ip in self.ip["ip"] and ip != None:
+                                            is_error = True
+                                            st.error("이미 예약했습니다")
+                                        if ip == None:
+                                            st.error(f"에러발생 다시 시도해 주세요 ip : {ip}")
+                                        if is_error == False:
+                                            self.ip["ip"].append(ip)
+                                            st.success("예약이 완료되었습니다.",icon="✅")
+                                            self.saveData()
                     except:
                          st.error("예약에 실패했습니다. 이미 예약된 날짜인지 확인해 주세요")
 

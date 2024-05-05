@@ -86,12 +86,14 @@ class app():
     def saveIpData(self):
         with open("./ip.json","w",encoding="utf-8") as f:
             json.dump(self.ip,f,ensure_ascii=False,indent=4)
+        self.saveInfoToGoogleSP()
 
     #구글 스프레드시트 저장
     def saveGoogleSP(self):
         conn = st.connection("gsheets", type=GSheetsConnection)
         sheet_data = {"Data" : self.data}
         conn.update(worksheet="시트1", data=sheet_data)
+    def saveInfoToGoogleSP(self):
         conn = st.connection("gsheets", type=GSheetsConnection)
         sheet_data = {"Data" : self.ip}
         conn.update(worksheet="시트2", data=sheet_data)

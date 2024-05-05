@@ -57,8 +57,7 @@ class app():
                 return None
         except:
             return None
-
-        return session_info.request.remote_ip,session_info
+        return session_info
 
     #학번 검사
     @staticmethod
@@ -87,11 +86,6 @@ class app():
     def saveIpData(self):
         with open("./ip.json","w",encoding="utf-8") as f:
             json.dump(self.ip,f,ensure_ascii=False,indent=4)
-    
-    #ip 테스트
-    def testIp(self):
-        if st.button("get ip"):
-            st.markdown(f"The remote ip is :red[{self.getRemoteIp()}]")
 
     #구글 스프레드시트 저장
     def saveGoogleSP(self):
@@ -137,14 +131,14 @@ class app():
                     if self.data["신청"]["아침"][i]["date"] == date:
                         del self.data["신청"]["아침"][i]
                         self.data["날짜"]["아침"].append(date)
-                        self.save()
+                        self.saveData()
                         self.saveGoogleSP()
             elif slot == 2:
                 for i in range(len(self.data["신청"]["점심"])):
                     if self.data["신청"]["점심"][i]["date"] == date:
                         del self.data["신청"]["점심"][i]
                         self.data["날짜"]["점심"].append(date)
-                        self.save()
+                        self.saveData()
                         self.saveGoogleSP()
 
     #예약 상황 확인하기
@@ -220,9 +214,10 @@ class app():
     def reservation(self):
     #예약 폼 설정
         with self.reservation_:
-            st.write("1. :blue[날짜, 시간, 학생 수]를 선택합니다")
-            st.write("2. 학생의 :blue[학번과 이름]을 입력합니다")
-            st.write("3. :red[예약하기] 버튼을 눌러 예약합니다")
+            with st.container(height=150):
+                st.write("1. :blue[날짜, 시간, 학생 수]를 선택합니다")
+                st.write("2. 학생의 :blue[학번과 이름]을 입력합니다")
+                st.write("3. :red[예약하기] 버튼을 눌러 예약합니다")
             with st.form("예약하기"):
                 #컨테이너 설정
                 with st.container():
@@ -231,8 +226,9 @@ class app():
                     studentNum = st.selectbox("학생 수를 선택하세요",self.studentNumber)
                     self.load_data()
                     st.write(":red[학생 수에 맞게 학번과 이름을 입력해 주세요]")
-                    for i in range(1,6):
-                        st.session_state[f'Student{i}'] = st.text_input(f"{i}번 학생의 학번과 이름을 입력하세요 (ex:10101홍길동)",max_chars=9)
+                    st.session_state[f'Student{1}'] = st.text_input(f"{1}번 학생의 학번과 이름을 입력하세요 (ex:10101홍길동)",max_chars=9)
+                    for i in range(2,6):
+                        st.session_state[f'Student{i}'] = st.text_input(f"{i}번 학생의 학번과 이름을 입력하세요",max_chars=9)
                     reservation_submitted = st.form_submit_button("예약하기")
                     
                 if reservation_submitted:
@@ -295,20 +291,21 @@ class app():
                                                 "studentNum" : studentNum, 
                                                 "students" : studentsData}
                                         self.data["신청"][slot].append(data)
-                                        ip = self.getRemoteIp()
+                                        ip = str(self.getRemoteIp())
                                         if ip in self.ip["ip"] and ip != None:
                                             is_error = True
                                             st.error("이미 예약했습니다")
                                         if ip == None:
-                                            st.error(f"에러발생 다시 시도해 주세요 ip : {ip}")
+                                            is_error = True
+                                            st.error(f"에러발생 다시 시도해 주세요")
                                         if is_error == False:
                                             self.ip["ip"].append(ip)
                                             st.success("예약이 완료되었습니다.",icon="✅")
                                             self.saveData()
+                                            self.saveIpData()
                     except:
                          st.error("예약에 실패했습니다. 이미 예약된 날짜인지 확인해 주세요")
 
 app = app()                
 app.reservation()
 app.currentReservation()
-app.testIp()

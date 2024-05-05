@@ -19,9 +19,6 @@ class app():
         if st.button("새로고침"):
             st.rerun()
 
-        if st.button("get ip"):
-            st.markdown(f"The remote ip is :red[{self.getRemoteIp()}]")
-
         #탭 설정
         self.reservation_, self.current_reservation = st.tabs(["예약하기", "예약 상황 확인하기"]) 
 
@@ -61,7 +58,7 @@ class app():
         except:
             return None
 
-        return session_info.request.remote_ip
+        return session_info.request.remote_ip,session_info
 
     #학번 검사
     @staticmethod
@@ -91,6 +88,11 @@ class app():
         with open("./ip.json","w",encoding="utf-8") as f:
             json.dump(self.ip,f,ensure_ascii=False,indent=4)
     
+    #ip 테스트
+    def testIp(self):
+        if st.button("get ip"):
+            st.markdown(f"The remote ip is :red[{self.getRemoteIp()}]")
+
     #구글 스프레드시트 저장
     def saveGoogleSP(self):
         conn = st.connection("gsheets", type=GSheetsConnection)
@@ -309,3 +311,4 @@ class app():
 app = app()                
 app.reservation()
 app.currentReservation()
+app.testIp()

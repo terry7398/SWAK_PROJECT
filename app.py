@@ -12,7 +12,14 @@ class app():
 
         #헤더 설정
         st.header("수학동아리 :blue[방탈출] 예약")
+
+        #새로고침 버튼
+        if st.button("새로고침"):
+            st.rerun()
+
+        #탭 설정
         self.reservation_, self.current_reservation = st.tabs(["예약하기", "예약 상황 확인하기"]) 
+
         #변수 설정
         self.dates = [f"5월 {i}일" for i in range(27,32)]
         self.slots = ["아침","점심"]
@@ -50,10 +57,64 @@ class app():
         except:
             return False
 
+    #로컬 파일 저장
     def save(self):
         with open("./data.json","w",encoding="utf-8") as f:
             json.dump(self.data,f,ensure_ascii=False,indent=4)
+    
+    #구글 스프레드시트 저장
+    def saveGoogleSP(self):    
+        conn = st.connection("gsheets", type=GSheetsConnection)
+        sheet_data = {"Data" : self.data}
+        conn.update(worksheet="시트1", data=sheet_data)
         
+    #비밀번호 검사
+    def checkPassword(self,n,method):
+        # n : key number
+        # method : 1 = confirm, 2 = delete
+        if method == 1:
+            with st.popover("Confirm"):
+                ps = st.text_input("비밀번호를 입력하세요",key=f"passwordInput{n}",type="password")
+                if st.button("Confirm",key=f"confirm{n}"):
+                    if ps == self.secrets["Password"]["confirmPassword"]:
+                        st.success("성공적으로 저장되었습니다",icon="✅")
+                        return True
+                    else:
+                        st.error("비밀번호가 틀렸습니다.")
+                        return False
+        elif method == 2:
+            with st.popover("Delete"):     
+                ps = st.text_input("비밀번호를 입력하세요",key=f"passwordInput{n}",type="password")
+                if st.button("Delete",key=f"confirm{n}"):
+                    if ps == self.secrets["Password"]["confirmPassword"]:
+                        st.success("성공적으로 삭제되었습니다",icon="✅")
+                        return True 
+                    else:
+                        st.error("비밀번호가 틀렸습니다.")
+                        return False
+
+    #예약 허락
+    def confirmReservation(self,n,p):
+        if self.checkPassword(n,p):
+            self.saveGoogleSP()
+
+    #삭제 허락                  
+    def deleteReservation(self,n,p,slot,date):
+        if self.checkPassword(n,p):
+            if slot == 1:
+                for i in range(len(self.data["신청"]["아침"])):
+                    if self.data["신청"]["아침"][i]["date"] == date:
+                        del self.data["신청"]["아침"][i]
+                        self.data["날짜"]["아침"].append(date)
+                        self.save()
+            elif slot == 2:
+                for i in range(len(self.data["신청"]["점심"])):
+                    if self.data["신청"]["점심"][i]["date"] == date:
+                        del self.data["신청"]["점심"][i]
+                        self.data["날짜"]["점심"].append(date)
+                        self.save()
+
+    #예약 상황 확인하기
     def currentReservation(self):
         self.load_data()
         with self.current_reservation:
@@ -68,6 +129,8 @@ class app():
                     if is_reservated:
                         with st.expander(self.data["일정"]["아침"][i] + "   :red[예약됨]"):
                             date = self.data["일정"]["아침"][i]
+                            l = 1
+                            o = 100
                             for i in self.data["신청"]["아침"]:
                                 if i["date"] == date:
                                     st.write("학생 수 : "+i["studentNum"])
@@ -79,6 +142,10 @@ class app():
                                     for k in studentId:
                                         st.write(k ," : " + i["students"][index][str(k)])
                                         index += 1
+                                    self.confirmReservation(l,1)
+                                    self.deleteReservation(o,2,1,date,)
+                                    l += 1
+                                    o += 1
 
                     else:
                         with st.expander(self.data["일정"]["아침"][i] + " :blue[예약가능]"):
@@ -95,7 +162,9 @@ class app():
                     if is_reservated:
                         with st.expander(self.data["일정"]["점심"][i] + "   :red[예약됨]"):
                             date = self.data["일정"]["점심"][i]
-                            for i in self.data["신청"]["점심"]:
+                            l = 1000
+                            o = 10000
+                            for i in self.data["신청"]["점심"]:  
                                 if i["date"] == date:
                                     st.write("학생 수 : "+i["studentNum"])
                                     studentId = []
@@ -106,11 +175,15 @@ class app():
                                     for k in studentId:
                                         st.write(k ," : " + i["students"][index][str(k)])
                                         index += 1
+                                    self.confirmReservation(l,1)
+                                    self.deleteReservation(o,2,2,date)
+                                    l += 1
+                                    o += 1
                     else:
                         with st.expander(self.data["일정"]["점심"][i] + " :blue[예약가능]"):
-                            st.write("")
-        
+                            st.write("")        
 
+    #예약하기
     def reservation(self):
     #예약 폼 설정
         with self.reservation_:
@@ -190,10 +263,7 @@ class app():
                                                 "students" : studentsData}
                                         self.data["신청"][slot].append(data)
                                         st.success("예약이 완료되었습니다.",icon="✅")
-                                        self.save() 
-                                        conn = st.connection("gsheets", type=GSheetsConnection)
-                                        sheet_data = {"Data" : self.data}
-                                        conn.update(worksheet="시트1", data=sheet_data)
+                                        self.save()
                     except:
                          st.error("예약에 실패했습니다. 이미 예약된 날짜인지 확인해 주세요")
 

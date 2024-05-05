@@ -92,6 +92,9 @@ class app():
         conn = st.connection("gsheets", type=GSheetsConnection)
         sheet_data = {"Data" : self.data}
         conn.update(worksheet="시트1", data=sheet_data)
+        conn = st.connection("gsheets", type=GSheetsConnection)
+        sheet_data = {"Data" : self.ip}
+        conn.update(worksheet="시트2", data=sheet_data)
         
     #비밀번호 검사
     def checkPassword(self,n,method):

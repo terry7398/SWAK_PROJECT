@@ -249,7 +249,8 @@ class app():
                     studentNum = st.selectbox("학생 수를 선택하세요",self.studentNumber)
                     self.loadData()
                     st.write(":red[학생 수에 맞게 학번과 이름을 입력해 주세요]")
-                    st.session_state[f'Student{1}'] = st.text_input(f"{1}번 학생의 학번과 이름을 입력하세요(ex:10101홍길동)",max_chars=9)
+                    st.write("(ex:10101홍길동)")
+                    st.session_state[f'Student{1}'] = st.text_input(f"{1}번 학생의 학번과 이름을 입력하세요",max_chars=9)
                     for i in range(2,6):
                         st.session_state[f'Student{i}'] = st.text_input(f"{i}번 학생의 학번과 이름을 입력하세요",max_chars=9)
                     reservation_submitted = st.form_submit_button("예약하기")

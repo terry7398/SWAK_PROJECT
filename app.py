@@ -2,7 +2,6 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import json
 import toml
-from streamlit_cookies_controller import CookieController
 from streamlit.web.server.websocket_headers import _get_websocket_headers
 
 class app():
@@ -21,7 +20,6 @@ class app():
         self.reservation_, self.current_reservation = st.tabs(["예약하기", "예약 상황 확인하기"]) 
 
         #변수 설정
-        self.controller = CookieController()
         self.dates = [f"5월 {i}일" for i in range(27,32)]
         self.slots = ["아침","점심"]
         self.studentNumber = [f"{i}명" for i in range(4,6)]

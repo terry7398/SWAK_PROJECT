@@ -1,16 +1,14 @@
 import streamlit as st
-import time
 from streamlit_gsheets import GSheetsConnection
 import json
 import toml
-from streamlit import runtime
-from streamlit.runtime.scriptrunner import get_script_run_ctx
+from streamlit_cookies_controller import CookieController
+from streamlit.web.server.websocket_headers import _get_websocket_headers
 
 class app():
     def __init__(self):
-
         #페이지 설정
-        st.set_page_config(page_title="SWAK_EscapeReservation")
+        st.set_page_config(page_title="SWAK_EscapeReservation",layout='wide')
 
         #헤더 설정
         st.header("수학동아리 :blue[방탈출] 예약")
@@ -23,13 +21,14 @@ class app():
         self.reservation_, self.current_reservation = st.tabs(["예약하기", "예약 상황 확인하기"]) 
 
         #변수 설정
+        self.controller = CookieController()
         self.dates = [f"5월 {i}일" for i in range(27,32)]
         self.slots = ["아침","점심"]
         self.studentNumber = [f"{i}명" for i in range(4,6)]
         self.data = None
-        self.ip = None
-        self.load_ip()
-        self.load_data()
+        self.headers = None
+        self.loadHeader()
+        self.loadData()
         for i in range(1,6):
             if f"Student{i}" not in st.session_state:
                 st.session_state[f'Student{i}'] = ""
@@ -37,28 +36,41 @@ class app():
             self.secrets = toml.load(f)
 
     #파일 불러오기
-    def load_data(self):
+    def loadData(self):
         with open("./data.json",encoding="utf-8") as f:
             self.data = json.load(f)      
-    def load_ip(self):
-        with open("./ip.json",encoding="utf-8") as f:
-            self.ip = json.load(f)
+    def loadHeader(self):
+        with open("./headers.json",encoding="utf-8") as f:
+            self.headers = json.load(f)
 
-    #ip추출
+    def loadDataFromGoogleSP(self):
+        conn = st.connection("gsheets", type=GSheetsConnection)
+        df = conn.read(
+            ttl="1s",
+            worksheet="시트1",
+            usecols=[0],
+            nrows=2,
+        )
+        self.data["날짜"] = eval(df["Data"][0])
+        self.data["신청"] = eval(df["Data"][1])
+        self.saveData()
+        df = conn.read(
+            ttl="1s",
+            worksheet="시트2",
+            usecols=[0],
+            nrows=1,
+        )
+        self.headers["headers"] = eval(df["Data"][0])
+        self.saveHeader()
+        st.success("성공적으로 불러왔습니다",icon="✅")
+
     @staticmethod
-    def getRemoteIp() -> str:
-        try:
-            ctx = get_script_run_ctx()
-            if ctx is None:
-                return None
-
-            session_info = runtime.get_instance().get_client(ctx.session_id)
-            if session_info is None:
-                return None
-        except:
-            return None
-        return session_info
-
+    def getHeader():
+        headers = _get_websocket_headers()
+        if headers is None:
+            return {}
+        return headers
+        
     #학번 검사
     @staticmethod
     def CheckStudentId(students):
@@ -83,20 +95,20 @@ class app():
     def saveData(self):
         with open("./data.json","w",encoding="utf-8") as f:
             json.dump(self.data,f,ensure_ascii=False,indent=4)
-    def saveIpData(self):
-        with open("./ip.json","w",encoding="utf-8") as f:
-            json.dump(self.ip,f,ensure_ascii=False,indent=4)
-        self.saveInfoToGoogleSP()
+    def saveHeader(self):
+        with open("./headers.json","w",encoding="utf-8") as f:
+            json.dump(self.headers,f,ensure_ascii=False,indent=4)
 
     #구글 스프레드시트 저장
-    def saveGoogleSP(self):
+    def saveDataToGoogleSP(self):
         conn = st.connection("gsheets", type=GSheetsConnection)
         sheet_data = {"Data" : self.data}
         conn.update(worksheet="시트1", data=sheet_data)
-    def saveInfoToGoogleSP(self):
         conn = st.connection("gsheets", type=GSheetsConnection)
-        sheet_data = {"Data" : self.ip}
+        sheet_data = {"Data" : self.headers}
         conn.update(worksheet="시트2", data=sheet_data)
+
+
         
     #비밀번호 검사
     def checkPassword(self,n,method):
@@ -104,6 +116,7 @@ class app():
         # method : 1 = confirm, 2 = delete
         if method == 1:
             with st.popover("Confirm"):
+                st.write(":red[모든 예약 내용이 저장됩니다 지워야 할 예약 내용이 있다면 지운 다음 저장해 주세요]")
                 ps = st.text_input("비밀번호를 입력하세요",key=f"passwordInput{n}",type="password")
                 if st.button("Confirm",key=f"confirm{n}"):
                     if ps == self.secrets["Password"]["confirmPassword"]:
@@ -126,7 +139,7 @@ class app():
     #예약 허락
     def confirmReservation(self,n,p):
         if self.checkPassword(n,p):
-            self.saveGoogleSP()
+            self.saveDataToGoogleSP()
 
     #삭제 허락                  
     def deleteReservation(self,n,p,slot,date):
@@ -137,18 +150,18 @@ class app():
                         del self.data["신청"]["아침"][i]
                         self.data["날짜"]["아침"].append(date)
                         self.saveData()
-                        self.saveGoogleSP()
+                        self.saveDataToGoogleSP()
             elif slot == 2:
                 for i in range(len(self.data["신청"]["점심"])):
                     if self.data["신청"]["점심"][i]["date"] == date:
                         del self.data["신청"]["점심"][i]
                         self.data["날짜"]["점심"].append(date)
                         self.saveData()
-                        self.saveGoogleSP()
+                        self.saveDataToGoogleSP()
 
     #예약 상황 확인하기
     def currentReservation(self):
-        self.load_data()
+        self.loadData()
         with self.current_reservation:
             with st.container():
                 st.subheader(":blue[아침] (7시 53분~)")
@@ -179,16 +192,14 @@ class app():
                                     self.deleteReservation(o,2,1,date)
                                     l += 1
                                     o += 1
-
                     else:
                         with st.expander(self.data["일정"]["아침"][i] + " :blue[예약가능]"):
                             st.write("")
-
             with st.container():
                 st.subheader(":blue[점심] (12시 37분~)")
                 l = 1000
                 o = 10000
-                for i in range(5):
+                for i in range(5): 
                     is_reservated = False
                     date = self.data["일정"]["점심"][i]
                     for k in self.data["신청"]["점심"]:
@@ -199,6 +210,7 @@ class app():
                             date = self.data["일정"]["점심"][i]
                             for i in self.data["신청"]["점심"]:  
                                 if i["date"] == date:
+
                                     st.write("학생 수 : "+i["studentNum"])
                                     studentId = []
                                     for key in i["students"]:
@@ -214,9 +226,16 @@ class app():
                                     o += 1
                     else:
                         with st.expander(self.data["일정"]["점심"][i] + " :blue[예약가능]"):
-                            st.write("")        
-
-    #예약하기
+                            st.write("")   
+        with st.popover("Load"):
+            ps = st.text_input("비밀번호를 입력하세요",key=f"LoadPasswordInput",type="password")
+            if st.button("Load",key=f"Load"):
+                if ps == self.secrets["Password"]["loadPassword"]:
+                    self.loadDataFromGoogleSP()
+                else:
+                    st.error("비밀번호가 틀렸습니다.")
+        
+    #예약하기 
     def reservation(self):
     #예약 폼 설정
         with self.reservation_:
@@ -230,9 +249,9 @@ class app():
                     date = st.selectbox("날짜를 선택하세요",self.dates)
                     slot = st.selectbox("시간을 선택하세요",self.slots)
                     studentNum = st.selectbox("학생 수를 선택하세요",self.studentNumber)
-                    self.load_data()
+                    self.loadData()
                     st.write(":red[학생 수에 맞게 학번과 이름을 입력해 주세요]")
-                    st.session_state[f'Student{1}'] = st.text_input(f"{1}번 학생의 학번과 이름을 입력하세요 (ex:10101홍길동)",max_chars=9)
+                    st.session_state[f'Student{1}'] = st.text_input(f"{1}번 학생의 학번과 이름을 입력하세요(ex:10101홍길동)",max_chars=9)
                     for i in range(2,6):
                         st.session_state[f'Student{i}'] = st.text_input(f"{i}번 학생의 학번과 이름을 입력하세요",max_chars=9)
                     reservation_submitted = st.form_submit_button("예약하기")
@@ -292,11 +311,11 @@ class app():
                                         
                                     #저장
                                     if is_error == False:
-                                        ip = str(self.getRemoteIp())
-                                        if ip in self.ip["ip"] and ip != None:
+                                        header = str(self.getHeader())
+                                        if header in self.headers["headers"] and header != None:
                                             is_error = True
                                             st.error("이미 예약했습니다 다른 학생이 예약해 주세요")
-                                        if ip == None:
+                                        if header == None:
                                             is_error = True
                                             st.error("에러발생 다시 시도해 주세요")
                                         if is_error == False:
@@ -305,10 +324,10 @@ class app():
                                                 "studentNum" : studentNum,
                                                 "students" : studentsData}  
                                             self.data["신청"][slot].append(data)
-                                            self.ip["ip"].append(ip)
+                                            self.headers["headers"].append(header)
                                             st.success("예약이 완료되었습니다.",icon="✅")
                                             self.saveData()
-                                            self.saveIpData()
+                                            self.saveHeader()
                     except:
                          st.error("예약에 실패했습니다. 이미 예약된 날짜인지 확인해 주세요")
 

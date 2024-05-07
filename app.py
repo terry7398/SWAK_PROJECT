@@ -8,7 +8,7 @@ class app():
     def __init__(self):
         #페이지 설정
         st.set_page_config(page_title="SWAK_EscapeReservation",layout='wide')
-
+        
         #헤더 설정
         st.header("수학동아리 :blue[방탈출] 예약")
 
@@ -24,8 +24,8 @@ class app():
         self.slots = ["아침","점심"]
         self.studentNumber = [f"{i}명" for i in range(4,6)]
         self.data = None
-        self.headers = None
-        self.loadHeader()
+        self.ip = None
+        self.loadIP()
         self.loadData()
         for i in range(1,6):
             if f"Student{i}" not in st.session_state:
@@ -37,9 +37,9 @@ class app():
     def loadData(self):
         with open("./data.json",encoding="utf-8") as f:
             self.data = json.load(f)      
-    def loadHeader(self):
-        with open("./headers.json",encoding="utf-8") as f:
-            self.headers = json.load(f)
+    def loadIP(self):
+        with open("./ip.json",encoding="utf-8") as f:
+            self.ip = json.load(f)
 
     def loadDataFromGoogleSP(self):
         conn = st.connection("gsheets", type=GSheetsConnection)
@@ -58,8 +58,8 @@ class app():
             usecols=[0],
             nrows=1,
         )
-        self.headers["headers"] = eval(df["Data"][0])
-        self.saveHeader()
+        self.ip["headers"] = eval(df["Data"][0])
+        self.saveIP()
         st.success("성공적으로 불러왔습니다",icon="✅")
 
     @staticmethod
@@ -68,7 +68,7 @@ class app():
         if headers is None:
             return {}
         return headers
-        
+    
     #학번 검사
     @staticmethod
     def CheckStudentId(students):
@@ -93,9 +93,9 @@ class app():
     def saveData(self):
         with open("./data.json","w",encoding="utf-8") as f:
             json.dump(self.data,f,ensure_ascii=False,indent=4)
-    def saveHeader(self):
-        with open("./headers.json","w",encoding="utf-8") as f:
-            json.dump(self.headers,f,ensure_ascii=False,indent=4)
+    def saveIP(self):
+        with open("./ip.json","w",encoding="utf-8") as f:
+            json.dump(self.ip,f,ensure_ascii=False,indent=4)
 
     #구글 스프레드시트 저장
     def saveDataToGoogleSP(self):
@@ -103,11 +103,9 @@ class app():
         sheet_data = {"Data" : self.data}
         conn.update(worksheet="시트1", data=sheet_data)
         conn = st.connection("gsheets", type=GSheetsConnection)
-        sheet_data = {"Data" : self.headers}
+        sheet_data = {"Data" : self.ip}
         conn.update(worksheet="시트2", data=sheet_data)
-
-
-        
+    
     #비밀번호 검사
     def checkPassword(self,n,method):
         # n : key number
@@ -265,70 +263,71 @@ class app():
                             break
                         else: 
                             continue
-                    try:
-                        if is_error == False and self.data["날짜"][slot][self.data["날짜"][slot].index(date)] is not None:
-                            #저장을 위한 변수 생성
-                            studentsData = []
-                            studentsId = []
-                            students = [st.session_state[f'Student{i}'] for i in range(1,int(studentNum[0]) + 1)]
-                            try:
-                                if self.CheckStudentId(students):
-                                    for i in range(0,int(studentNum[0])):
-                                        if len(students[i]) < 7 or len(students[i]) > 9:
-                                            is_error = True
-                                            st.error("이름을 올바르게 입력해 주세요")
-                                            break
-                                else:
-                                    is_error = True
-                                    st.error("학번과 이름을 모두 입력해 주세요.")
-                                if is_error == False:
-                                    for i in range(0,int(studentNum[0])):
-                                        studentsData.append({students[i][:5] : students[i][5:]})
-                                        studentsId.append(students[i][:5])
-
-                            except:
-                                st.error("학번과 이름을 모두 입력해 주세요.")
-                                is_error = True
-
-                            #학생중 이미 다른 날짜에 예약했는지 검사
-                            if is_error == False:
-                                for student in studentsData:
-                                    for i in self.data["신청"]["아침"]:
-                                        if student in i["students"]:
-                                            duplicatedStudent = student.values()
-                                            st.error(f"{duplicatedStudent}님이 이미 예약했습니다")
-                                            is_error = True
-                                    for i in self.data["신청"]["점심"]:
-                                        if student in i["students"]:
-                                            duplicatedStudent = student.values()
-                                            st.error(f"{duplicatedStudent}님이 이미 예약했습니다")
-                                            is_error = True
-                                if is_error == False:
-                                    if len(studentsId) != len(set(studentsId)):
-                                        st.error("중복된 학번이 있습니다.")
+                    # try:
+                    if is_error == False and self.data["날짜"][slot][self.data["날짜"][slot].index(date)] is not None:
+                        #저장을 위한 변수 생성
+                        studentsData = []
+                        studentsId = []
+                        students = [st.session_state[f'Student{i}'] for i in range(1,int(studentNum[0]) + 1)]
+                        try:
+                            if self.CheckStudentId(students):
+                                for i in range(0,int(studentNum[0])):
+                                    if len(students[i]) < 7 or len(students[i]) > 9:
                                         is_error = True
-                                        
-                                    #저장
+                                        st.error("이름을 올바르게 입력해 주세요")
+                                        break
+                            else:
+                                is_error = True
+                                st.error("학번과 이름을 모두 입력해 주세요.")
+                            if is_error == False:
+                                for i in range(0,int(studentNum[0])):
+                                    studentsData.append({students[i][:5] : students[i][5:]})
+                                    studentsId.append(students[i][:5])
+
+                        except:
+                            st.error("학번과 이름을 모두 입력해 주세요.")
+                            is_error = True
+
+                        #학생중 이미 다른 날짜에 예약했는지 검사
+                        if is_error == False:
+                            for student in studentsData:
+                                for i in self.data["신청"]["아침"]:
+                                    if student in i["students"]:
+                                        duplicatedStudent = student.values()
+                                        st.error(f"{duplicatedStudent}님이 이미 예약했습니다")
+                                        is_error = True
+                                for i in self.data["신청"]["점심"]:
+                                    if student in i["students"]:
+                                        duplicatedStudent = student.values()
+                                        st.error(f"{duplicatedStudent}님이 이미 예약했습니다")
+                                        is_error = True
+                            if is_error == False:
+                                if len(studentsId) != len(set(studentsId)):
+                                    st.error("중복된 학번이 있습니다.")
+                                    is_error = True
+                                    
+                                #저장
+                                if is_error == False:
+                                    header = dict(self.getHeader())
+                                    ip = header["X-Forwarded-For"]
+                                    if ip in self.ip["ip"]:
+                                        is_error = True
+                                        st.error("이미 예약했습니다 다른 학생이 예약해 주세요")
+                                    if ip == None:
+                                        is_error = True
+                                        st.error("에러발생 다시 시도해 주세요")
                                     if is_error == False:
-                                        header = str(self.getHeader())
-                                        if header in self.headers["headers"] and header != None:
-                                            is_error = True
-                                            st.error("이미 예약했습니다 다른 학생이 예약해 주세요")
-                                        if header == None:
-                                            is_error = True
-                                            st.error("에러발생 다시 시도해 주세요")
-                                        if is_error == False:
-                                            self.data["날짜"][slot].remove(date)
-                                            data = {"date" : date,
-                                                "studentNum" : studentNum,
-                                                "students" : studentsData}  
-                                            self.data["신청"][slot].append(data)
-                                            self.headers["headers"].append(header)
-                                            st.success("예약이 완료되었습니다.",icon="✅")
-                                            self.saveData()
-                                            self.saveHeader()
-                    except:
-                         st.error("예약에 실패했습니다. 이미 예약된 날짜인지 확인해 주세요")
+                                        self.data["날짜"][slot].remove(date)
+                                        data = {"date" : date,
+                                            "studentNum" : studentNum,
+                                            "students" : studentsData}
+                                        self.data["신청"][slot].append(data)
+                                        self.ip["ip"].append(ip)
+                                        st.success("예약이 완료되었습니다.",icon="✅")
+                                        self.saveData()
+                                        self.saveIP()
+                    # except:
+                    #      st.error("예약을 실패했습니다. 이미 예약된 날짜인지 확인해 주세요")
 
 app = app()                
 app.reservation()

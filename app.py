@@ -10,7 +10,8 @@ class app():
         st.set_page_config(page_title="SWAK_EscapeReservation",layout='wide')
         
         #헤더 설정
-        st.header("수학동아리 :blue[방탈출] 예약")
+        st.header("난우중학교 :blue[솩] 동아리")
+        st.header(":lock: :blue[솩  이스케이프 2기] 예약",divider="rainbow")
 
         #새로고침 버튼
         if st.button("새로고침"):

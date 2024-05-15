@@ -13,10 +13,10 @@ class app():
         #헤더 설정
         st.header("난우중학교 :blue[솩] 동아리")
         st.header(":lock: [:blue[솩  이스케이프 3기]]('https://open.kakao.com/o/sQATk7cf') 예약",divider="rainbow")
-
+        st.write("Developer : [송지성](https://github.com/terry7398/terry7398)")
         #새로고침 버튼
         if st.button("새로고침"):
-            st.rerun()     
+            st.rerun()
 
         #변수 설정
         self.dates = [f"5월 {i}일" for i in range(27,32)]
@@ -43,9 +43,12 @@ class app():
             self.secrets = toml.load(f)
 
         #탭 설정
-        if self.EasterEggParam == self.secrets["Param"]["EasterEggParam"]:
+        if self.EasterEggParam == self.secrets["Param"]["EasterEggParam1"]:
             st.success("축하합니다! 이스터에그를 찾았습니다!")
-            st.success("이스터에그 ID : "+self.secrets["Param"]["EasterEggID"])
+            st.success("이스터에그 ID : "+self.secrets["Param"]["EasterEggID1"])
+        if self.EasterEggParam == self.secrets["Param"]["EasterEggParam2"]:
+            st.success("축하합니다! 이스터에그를 찾았습니다!")
+            st.success("이스터에그 ID : "+self.secrets["Param"]["EasterEggID2"])
         else:
             self.reservation_, self.current_reservation = st.tabs(["예약하기", "예약 상황 확인하기"])
             self.reservation()

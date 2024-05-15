@@ -7,19 +7,16 @@ from streamlit.web.server.websocket_headers import _get_websocket_headers
 class app():
     #초기화
     def __init__(self):
-        #페이지 설정
-        st.set_page_config(page_title="SWAK_EscapeReservation",layout='wide')
         
+        #페이지 설정
+        st.set_page_config(page_title="SWAK_EscapeReservation",layout='wide')   
         #헤더 설정
         st.header("난우중학교 :blue[솩] 동아리")
-        st.header(":lock: :blue[솩  이스케이프 3기] 예약",divider="rainbow")
+        st.header(":lock: [:blue[솩  이스케이프 3기]]('https://open.kakao.com/o/sQATk7cf') 예약",divider="rainbow")
 
         #새로고침 버튼
         if st.button("새로고침"):
-            st.rerun()
-
-        #탭 설정
-        self.reservation_, self.current_reservation = st.tabs(["예약하기", "예약 상황 확인하기"]) 
+            st.rerun()     
 
         #변수 설정
         self.dates = [f"5월 {i}일" for i in range(27,32)]
@@ -28,13 +25,31 @@ class app():
         self.data = None
         self.ip = None
         self.admin = None
+        try:
+            self.admin = st.query_params["admin"]
+        except:
+            pass
+        self.EasterEggParam = None
+        try:
+            self.EasterEggParam = st.query_params["easteregg"]
+        except:
+            pass
         self.loadIP()
         self.loadData()
         for i in range(1,6):
             if f"Student{i}" not in st.session_state:
                 st.session_state[f'Student{i}'] = ""
         with open("./.streamlit/secrets.toml", "r",encoding="utf-8") as f:
-            self.secrets = toml.load(f) 
+            self.secrets = toml.load(f)
+
+        #탭 설정
+        if self.EasterEggParam == self.secrets["Param"]["EasterEggParam"]:
+            st.success("축하합니다! 이스터에그를 찾았습니다!")
+            st.success("이스터에그 ID : "+self.secrets["Param"]["EasterEggID"])
+        else:
+            self.reservation_, self.current_reservation = st.tabs(["예약하기", "예약 상황 확인하기"])
+            self.reservation()
+            self.currentReservation()
     #파일 불러오기
     def loadData(self):
         with open("./data.json",encoding="utf-8") as f:
@@ -106,27 +121,28 @@ class app():
     def checkPassword(self,n,method):
         # n : key number
         # method : 1 = confirm, 2 = delete
-        if method == 1:
-            with st.popover("Confirm"):
-                st.write(":red[모든 예약 내용이 저장됩니다 지워야 할 예약 내용이 있다면 지운 다음 저장해 주세요]")
-                ps = st.text_input("비밀번호를 입력하세요",key=f"passwordInput{n}",type="password")
-                if st.button("Confirm",key=f"confirm{n}"):
-                    if ps == self.secrets["Password"]["confirmPassword"]:
-                        st.success("성공적으로 저장되었습니다",icon="✅")
-                        return True
-                    else:
-                        st.error("비밀번호가 틀렸습니다.")
-                        return False
-        elif method == 2:
-            with st.popover("Delete"):     
-                ps = st.text_input("비밀번호를 입력하세요",key=f"passwordInput{n}",type="password")
-                if st.button("Delete",key=f"confirm{n}"):
-                    if ps == self.secrets["Password"]["confirmPassword"]:
-                        st.success("성공적으로 삭제되었습니다",icon="✅")
-                        return True
-                    else:
-                        st.error("비밀번호가 틀렸습니다.")
-                        return False
+        if self.admin == self.secrets["Password"]["admin"]:
+            if method == 1:
+                with st.popover("Confirm"):
+                    st.write(":red[모든 예약 내용이 저장됩니다 지워야 할 예약 내용이 있다면 지운 다음 저장해 주세요]")
+                    ps = st.text_input("비밀번호를 입력하세요",key=f"passwordInput{n}",type="password")
+                    if st.button("Confirm",key=f"confirm{n}"):
+                        if ps == self.secrets["Password"]["confirmPassword"]:
+                            st.success("성공적으로 저장되었습니다",icon="✅")
+                            return True
+                        else:
+                            st.error("비밀번호가 틀렸습니다.")
+                            return False
+            elif method == 2:
+                with st.popover("Delete"):     
+                    ps = st.text_input("비밀번호를 입력하세요",key=f"passwordInput{n}",type="password")
+                    if st.button("Delete",key=f"confirm{n}"):
+                        if ps == self.secrets["Password"]["confirmPassword"]:
+                            st.success("성공적으로 삭제되었습니다",icon="✅")
+                            return True
+                        else:
+                            st.error("비밀번호가 틀렸습니다.")
+                            return False
     #예약 허락
     def confirmReservation(self,n,p):
         if self.checkPassword(n,p):
@@ -169,6 +185,11 @@ class app():
                     return False
                 else: 
                     continue
+            for i in range(1,int(self.studentNum[0]) + 1):
+                if st.session_state[f'Student{i}'] == self.secrets["Student"]["StudentName"]:
+                    st.success("축하합니다! 이스터에그를 찾았습니다!")
+                    st.success("이스터에그 ID : "+self.secrets["Student"]["EasterEggID"])
+                    return False
             if self.data["날짜"][self.slot][self.data["날짜"][self.slot].index(self.date)] is not None:   
                 try:
                     if self.CheckStudentId(self.students):
@@ -196,7 +217,7 @@ class app():
             return False
         return True
     #전화번호를 정확히 입력했는지 검사
-    def telephoneNumberCheck(self):
+    def checkTelephoneNumber(self):
         if len(st.session_state["Telephone"]) != 13:
             st.error("전화번호를 정확히 입력해 주세요")
             return False
@@ -204,12 +225,9 @@ class app():
             st.error("전화번호를 정확히 입력해 주세요")
             return False
         
-        #EsterEgg - 1
-        esterEggNumber = ["010-1234-5678","010-8765-4321"]
-        for i in range(1,10):
-            esterEggNumber.append("010-"+str(i)+str(i)+str(i)+str(i)+"-"+str(i)+str(i)+str(i)+str(i))
-        if st.session_state["Telephone"] in esterEggNumber:
-            st.success("EsterEgg - 1")
+        if st.session_state["Telephone"] == self.secrets["EasterEgg"]["telephone"]:
+            st.success("축하합니다! 이스터에그를 찾았습니다!")
+            st.success("이스터에그 ID : "+self.secrets['Telephone']['EasterEggID'])
             return False
         
         return True
@@ -224,6 +242,17 @@ class app():
                 st.error(f"전화번호가 이미 사용되었습니다")
                 return False
         return True
+    #명령어
+    def command(self):
+        command = [st.session_state["Telephone"]]
+        for i in range(1,6):
+            command.append(st.session_state[f'Student{i}'])
+        for i in command:
+            if i in self.secrets["Command"]["eastereggCommand"]:
+                st.success("축하합니다! 이스터에그를 찾았습니다!")
+                st.success("이스터에그 ID : "+self.secrets["Command"]["EasterEggID"])   
+                return False 
+        return True 
     #예약 최종 저장
     def saveReservation(self):
         header = dict(self.getHeader())
@@ -247,10 +276,6 @@ class app():
     #예약 상황 확인하기
     def currentReservation(self):
         self.loadData()
-        try:
-            self.admin = st.query_params["admin"]
-        except:
-            pass
         with self.current_reservation:
             with st.container():
                 st.subheader(":blue[아침] (7시 53분~)")
@@ -319,13 +344,17 @@ class app():
                     else:
                         with st.expander(self.data["일정"]["점심"][i] + " :blue[예약가능]"):
                             st.write("")   
-        with st.popover("Load"):
-            ps = st.text_input("비밀번호를 입력하세요",key=f"LoadPasswordInput",type="password")
-            if st.button("Load",key=f"Load"):
-                if ps == self.secrets["Password"]["loadPassword"]:
-                    self.loadDataFromGoogleSP()
-                else:
-                    st.error("비밀번호가 틀렸습니다.")       
+        if self.admin == self.secrets["Password"]["admin"]:
+            with st.popover("Load"):
+                ps = st.text_input("비밀번호를 입력하세요",key=f"LoadPasswordInput",type="password")
+                if st.button("Load",key=f"Load"):
+                    if ps == self.secrets["Password"]["loadPassword"]:
+                        self.loadDataFromGoogleSP()
+                    else:
+                        st.error("비밀번호가 틀렸습니다.")      
+        for i in range(30):
+            st.write("")
+        st.write("link + ?easteregg='SWAK xxxxxx'")
     #예약하기
     def reservation(self):
     #예약 폼 설정
@@ -340,7 +369,7 @@ class app():
                 with st.container():
                     self.studentsData = []
                     self.studentsId = []
-                    st.selectbox("방탈출 이름",["난우교도소 : 진실의 서막","EsterEgg-2"],disabled=True)
+                    st.selectbox("방탈출 이름",["난우교도소 : 진실의 서막"],disabled=True)
                     self.date = st.selectbox("날짜를 선택해 주세요",self.dates)
                     self.slot = st.selectbox("시간을 선택해 주세요",self.slots)
                     self.studentNum = st.selectbox("학생 수를 선택해 주세요",self.studentNumber)
@@ -358,14 +387,12 @@ class app():
                     reservation_submitted = st.form_submit_button("예약하기")
                     
                 if reservation_submitted:
-                    if self.correctNameCheck():
-                        if self.uniqueReservationCheck(): 
-                            if self.uniqueIDCheck():
-                                if self.telephoneNumberCheck():
-                                    if self.uniqueTelephoneNumberCheck():
-                                        self.saveReservation()
-
-app = app()                
-
-app.reservation()
-app.currentReservation()
+                    if self.command():
+                        if self.correctNameCheck():
+                            if self.uniqueReservationCheck(): 
+                                if self.uniqueIDCheck():
+                                    if self.checkTelephoneNumber():
+                                        if self.uniqueTelephoneNumberCheck():
+                                            self.saveReservation()
+        
+app = app()

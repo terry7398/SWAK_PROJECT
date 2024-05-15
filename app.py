@@ -2,6 +2,7 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import json
 import toml
+import base64
 from streamlit.web.server.websocket_headers import _get_websocket_headers
 
 class app():
@@ -347,6 +348,9 @@ class app():
                     else:
                         with st.expander(self.data["일정"]["점심"][i] + " :blue[예약가능]"):
                             st.write("")   
+        with st.expander("이스터에그 제출하기"):
+            st.write("[Google Form 바로가기](https://docs.google.com/forms/d/e/1FAIpQLSeeCyo7i4n9ziqK8mJlcAyLxa9Ar2VmbJe1SQ-T7Ktb_7EgLQ/viewform)")
+            st.image("./src/EasterEggQR.png",width=300)
         if self.admin == self.secrets["Password"]["admin"]:
             with st.popover("Load"):
                 ps = st.text_input("비밀번호를 입력하세요",key=f"LoadPasswordInput",type="password")

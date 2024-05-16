@@ -13,7 +13,7 @@ class app():
         st.set_page_config(page_title="SWAK_EscapeReservation",layout='wide')   
         #헤더 설정
         st.header("난우중학교 :blue[솩] 동아리")
-        st.header(":lock: [:blue[솩  이스케이프 3기]]('https://open.kakao.com/o/sQATk7cf') 예약",divider="rainbow")
+        st.header(":lock: :blue[솩  이스케이프 3기]예약",divider="rainbow")
         st.write("Developer : [송지성](https://github.com/terry7398/terry7398)")
         #새로고침 버튼
         if st.button("새로고침"):
@@ -350,7 +350,14 @@ class app():
                             st.write("")   
         with st.expander("이스터에그 제출하기"):
             st.write("[Google Form 바로가기](https://docs.google.com/forms/d/e/1FAIpQLSeeCyo7i4n9ziqK8mJlcAyLxa9Ar2VmbJe1SQ-T7Ktb_7EgLQ/viewform)")
-            st.image("./src/EasterEggQR.png",width=300)
+            st.markdown(
+                """<a href="https://open.kakao.com/o/sQATk7cf">
+                <img src="data:image/png;base64,{}" width="300">
+                </a>""".format(
+                    base64.b64encode(open("./src/EasterEggQR.png", "rb").read()).decode()
+                ),
+                unsafe_allow_html=True,
+            )
         if self.admin == self.secrets["Password"]["admin"]:
             with st.popover("Load"):
                 ps = st.text_input("비밀번호를 입력하세요",key=f"LoadPasswordInput",type="password")

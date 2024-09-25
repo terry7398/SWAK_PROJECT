@@ -109,7 +109,7 @@ const QuestionPage = () => {
             transition={{ duration: 2 }}
           >
             <button className="answer-button" onClick={handleCheckAnswer}>
-              Check Answer
+              정답
             </button>
           </motion.div>
         )}
@@ -122,7 +122,7 @@ const QuestionPage = () => {
           >
             <p>Correct Answer: {answerData[questionID]}</p>
             <button className="answer-button" onClick={handleBackToHome}>
-              Back to Home
+              처음으로
             </button>
           </motion.div>
         )}

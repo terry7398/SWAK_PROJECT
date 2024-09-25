@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "./HomePage.css";
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const [isClick, setisClick] = useState(false);
 
   const getRandomNumber = () => {
     let max = 8;
@@ -13,7 +14,9 @@ const HomePage = () => {
   };
 
   const handleGetStarted = () => {
-    navigate("/question/" + getRandomNumber());
+    setTimeout(() => {
+      navigate("/question/" + getRandomNumber());
+    }, 100);
   };
 
   return (
@@ -26,11 +29,23 @@ const HomePage = () => {
     >
       <h1 className="title">솩 3기 수학 카페</h1>
       <motion.button
-        initial={false}
-        animate={{ scale: 1.5 }}
-        whileTap="press"
-        onClick={handleGetStarted}
-      ></motion.button>
+        whileTap={{ scale: 1.2 }}
+        onClick={() => {
+          setisClick(!isClick);
+          handleGetStarted();
+        }}
+      >
+        시작하기
+        {/* {isClick && (
+          <motion.div
+            className="box"
+            initial={{ opacity: 1, scale: 0.1 }}
+            animate={{ opacity: 1, scale: 10 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 2 }}
+          />
+        )} */}
+      </motion.button>
     </motion.div>
   );
 };

@@ -3,6 +3,29 @@
 }
 
 button {
+  font-family: "HSSantokki-Regular";
   width: 10rem;
   height: 6rem;
+  background: #57eb64;
+  color: #000000;
+  border: none;
+  padding: 15px 25px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 2rem;
+}
+
+.button-back {
+  background: #57eb64;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.box {
+  position: relative;
+  width: 32rem;
+  height: 32rem;
+  border-radius: 50%;
+  background: #57eb64;
 }

@@ -35,7 +35,7 @@ const QuestionPage = () => {
   const questionImage = require(`../assets/${questionID}.jpg`); // Dynamically load the image
 
   useEffect(() => {
-    const animation = animate(count, 180, { duration: 5 });
+    const animation = animate(count, 180, { duration: 3 });
     animation.then(() => {
       setTimeout(() => {
         setFirstAnim(true);
@@ -45,7 +45,7 @@ const QuestionPage = () => {
       }, 3000);
       setTimeout(() => {
         setLateReady(true);
-      }, 3100);
+      }, 3010);
     });
     return animation.stop;
   }, []);
@@ -79,7 +79,7 @@ const QuestionPage = () => {
             </motion.h1>
           </>
         )}
-        {ready && (
+        {lateReady && (
           <motion.div
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -101,7 +101,7 @@ const QuestionPage = () => {
           </motion.div>
         )}
 
-        {ready && !showAnswer && (
+        {lateReady && !showAnswer && (
           <motion.div
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}

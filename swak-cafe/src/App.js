@@ -1,21 +1,53 @@
-import { React, useEffect } from "react";
+import { React, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import QuestionPage from "./pages/QuestionPage";
 import "./App.css";
 
 const App = () => {
+  const [dimensions, setDimensions] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+  const [isTablet, setIsTablet] = useState(false);
+
   useEffect(() => {
-    const vh = window.innerHeight * 0.01;
-    const vw = window.innerWidth * 0.01;
-    document.documentElement.style.setProperty("--vh", `${vh}px`);
-    document.documentElement.style.setProperty("--vw", `${vw}px`);
+    // 갤럭시 태블릿 감지
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    if (userAgent.includes("SM")) {
+      setIsTablet(true);
+    }
+
+    function handleResize() {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/question/:questionID" element={<QuestionPage />} />
-    </Routes>
+    <div
+      style={{
+        width: isTablet ? dimensions.width * 0.7 : dimensions.width * 0.9,
+        height: isTablet ? dimensions.height * 0.7 : dimensions.height * 0.9,
+        margin: "0 auto",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/question/:questionID" element={<QuestionPage />} />
+      </Routes>
+    </div>
   );
 };
 

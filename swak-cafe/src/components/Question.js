@@ -1,9 +1,8 @@
-import React from "react";
 import questions from "../assets/question.json";
 import "./Question.css";
 
 const Question = ({ questionID }) => {
-  const question = questions.find((q) => q.id === questionID);
+  const question = questions.find((q) => q.id === parseInt(questionID));
 
   if (!question) {
     return <div className="question-box">Question not found.</div>;

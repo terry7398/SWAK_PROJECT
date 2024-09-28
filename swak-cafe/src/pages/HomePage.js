@@ -9,7 +9,7 @@ const HomePage = () => {
 
   const getRandomNumber = () => {
     let max = 8;
-    let res = Math.floor(Math.random() * max) + 1;
+    let res = Math.floor(Math.random() * max - 0.1) + 1;
     return res;
   };
 
@@ -36,15 +36,6 @@ const HomePage = () => {
         }}
       >
         시작하기
-        {/* {isClick && (
-          <motion.div
-            className="box"
-            initial={{ opacity: 1, scale: 0.1 }}
-            animate={{ opacity: 1, scale: 10 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 2 }}
-          />
-        )} */}
       </motion.button>
     </motion.div>
   );

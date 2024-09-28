@@ -23,6 +23,7 @@
   font-size: 1.2em;
   margin-bottom: 20px;
   color: #272727;
+  word-break: keep-all;
 }
 
 .question-hint {

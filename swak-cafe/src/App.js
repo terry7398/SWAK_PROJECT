@@ -12,7 +12,6 @@ const App = () => {
   const [isTablet, setIsTablet] = useState(false);
 
   useEffect(() => {
-    // 갤럭시 태블릿 감지
     const userAgent = window.navigator.userAgent.toLowerCase();
     if (userAgent.includes("SM")) {
       setIsTablet(true);

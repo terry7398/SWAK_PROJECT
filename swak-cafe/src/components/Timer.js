@@ -1,12 +1,14 @@
-import { time } from "framer-motion/client";
 import React, { useEffect, useState } from "react";
+import "./Timer.css";
 
 const Timer = ({ duration, onComplete }) => {
   const [timeLeft, setTimeLeft] = useState(duration);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
+      if (timeLeft > 0) {
+        setTimeLeft((prev) => prev - 1);
+      }
     }, 1000);
 
     const timeout = setTimeout(() => {

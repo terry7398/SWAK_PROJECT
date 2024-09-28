@@ -15,3 +15,9 @@ code {
   font-weight: normal;
   src: url("./fonts/HSSantokki-Regular.ttf") format("truetype");
 }
+
+@font-face {
+  font-family: "NotoSansKR-VariableFont_wght";
+  font-weight: normal;
+  src: url("./fonts/NotoSansKR-VariableFont_wght.ttf") format("truetype");
+}

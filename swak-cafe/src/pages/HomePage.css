@@ -18,14 +18,5 @@ button {
 .button-back {
   background: #57eb64;
   display: flex;
-  justify-content: center;
   align-items: center;
-}
-
-.box {
-  position: relative;
-  width: 32rem;
-  height: 32rem;
-  border-radius: 50%;
-  background: #57eb64;
 }

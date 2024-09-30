@@ -17,7 +17,7 @@ const QuestionPage = () => {
   const count = useMotionValue(0);
   const rounded = useTransform(count, Math.round);
 
-  const question = questions.find((q) => q.id === questionID);
+  const question = questions.find((q) => q.id === parseInt(questionID));
 
   const handleCheckAnswer = () => {
     setShowAnswer(true);

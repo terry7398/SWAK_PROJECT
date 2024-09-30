@@ -11,7 +11,7 @@ const Question = ({ questionID }) => {
   return (
     <div className="question-box">
       <h2 className="question-title"> {question.name}</h2>
-      <strong className="question-description">{question.description}</strong>
+      <b className="question-description">{question.description}</b>
     </div>
   );
 };

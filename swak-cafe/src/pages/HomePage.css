@@ -1,9 +1,10 @@
 .title {
+  font-family: "HS-Regular";
   font-size: 8rem;
 }
 
 button {
-  font-family: "HSSantokki-Regular";
+  font-family: "HS-Regular";
   width: 10rem;
   height: 6rem;
   background: #57eb64;

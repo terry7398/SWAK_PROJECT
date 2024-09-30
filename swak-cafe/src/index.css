@@ -11,13 +11,16 @@ code {
 }
 
 @font-face {
-  font-family: "HSSantokki-Regular";
+  font-family: "HS-Regular";
+  src: url("https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/HS-Regular.woff")
+    format("woff");
   font-weight: normal;
-  src: url("./fonts/HSSantokki-Regular.ttf") format("truetype");
+  font-style: normal;
 }
 
 @font-face {
-  font-family: "NotoSansKR-VariableFont_wght";
+  font-family: "NotoSansKR-Variable";
   font-weight: normal;
-  src: url("./fonts/NotoSansKR-VariableFont_wght.ttf") format("truetype");
+  src: url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap")
+    format("woff");
 }

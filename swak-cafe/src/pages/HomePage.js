@@ -8,7 +8,7 @@ const HomePage = () => {
   const [isClick, setisClick] = useState(false);
 
   const getRandomNumber = () => {
-    let max = 8;
+    let max = 7;
     let res = Math.floor(Math.random() * max - 0.1) + 1;
     return res;
   };
@@ -27,7 +27,10 @@ const HomePage = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 1 }}
     >
-      <h1 className="title">솩 3기 수학 카페</h1>
+      <div>
+        <h1 className="title">솩 3기 수학 카페</h1>
+      </div>
+
       <motion.button
         whileTap={{ scale: 1.2 }}
         onClick={() => {

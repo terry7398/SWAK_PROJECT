@@ -2,6 +2,8 @@ import { React, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import QuestionPage from "./pages/QuestionPage";
+import Explanation from "./pages/ExplanationPage";
+// import CrosswordGame from "./pages/CrosswordGame";
 import "./App.css";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -47,6 +49,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/question/:questionID" element={<QuestionPage />} />
+        <Route path="/explanation/:questionID" element={<Explanation />} />
+        {/* <Route path="/CrosswordGame" element={<CrosswordGame />} /> */}
       </Routes>
     </div>
   );

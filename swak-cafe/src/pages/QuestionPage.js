@@ -5,7 +5,6 @@ import "./QuestionPage.css";
 import ProgressBar from "../components/ProgressBar";
 import Timer from "../components/Timer";
 import Question from "../components/Question";
-import questions from "../assets/question.json";
 
 const QuestionPage = () => {
   const { questionID } = useParams();
@@ -16,8 +15,7 @@ const QuestionPage = () => {
   const [lateReady, setLateReady] = useState(false);
   const count = useMotionValue(0);
   const rounded = useTransform(count, Math.round);
-
-  const question = questions.find((q) => q.id === parseInt(questionID));
+  const [answerInput, setAnswerInput] = useState("");
 
   const handleCheckAnswer = () => {
     setShowAnswer(true);
@@ -32,19 +30,25 @@ const QuestionPage = () => {
   const handleBackToHome = () => {
     navigate("/");
   };
+  const handleExplanation = () => {
+    navigate("/explanation/" + questionID);
+  };
+  const handleInputChange = (e) => {
+    setAnswerInput(e.target.value);
+  };
 
   useEffect(() => {
     const animation = animate(count, 180, { duration: 3 });
     animation.then(() => {
       setTimeout(() => {
         setFirstAnim(true);
-      }, 1000);
+      }, 500);
       setTimeout(() => {
         setReady(true);
-      }, 3000);
+      }, 2000);
       setTimeout(() => {
         setLateReady(true);
-      }, 3010);
+      }, 2010);
     });
     return animation.stop;
   }, []);
@@ -82,14 +86,31 @@ const QuestionPage = () => {
           <motion.div
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ opacity: 0 }}
+            exit={{ y: -10, opacity: 0 }}
             transition={{ duration: 2 }}
           >
             <ProgressBar duration={180} onComplete={handleTimeUp} />
             <Timer duration={180} onComplete={handleTimeUp} />
           </motion.div>
         )}
-        {ready && (
+        {showAnswer && (
+          <motion.div
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 2 }}
+          >
+            <div className="button-container">
+              <Question
+                questionID={questionID}
+                isRight={true}
+                answer={answerInput}
+              />
+            </div>
+            <Question questionID={questionID} />
+          </motion.div>
+        )}
+        {ready && !showAnswer && (
           <motion.div
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -107,9 +128,17 @@ const QuestionPage = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 2 }}
           >
-            <button className="answer-button" onClick={handleCheckAnswer}>
-              정답
-            </button>
+            <div className="button-container">
+              <input
+                type="number"
+                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"
+                onChange={handleInputChange}
+                value={answerInput}
+              />
+              <button className="answer-button" onClick={handleCheckAnswer}>
+                정답
+              </button>
+            </div>
           </motion.div>
         )}
 
@@ -119,10 +148,27 @@ const QuestionPage = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 1 }}
           >
-            <p className="answer">정답: {question.answer}</p>
-            <button className="answer-button" onClick={handleBackToHome}>
-              처음으로
-            </button>
+            <div className="button-container">
+              <Question questionID={questionID} isAnswer={true} />
+            </div>
+            <div className="button-container">
+              <motion.button
+                className="answer-button"
+                onClick={handleBackToHome}
+                whileTap={{ scale: 1.2 }}
+              >
+                처음으로
+              </motion.button>
+              <motion.button
+                className="answer-button"
+                onClick={() => {
+                  handleExplanation();
+                }}
+                whileTap={{ scale: 1.2 }}
+              >
+                풀이 보기
+              </motion.button>
+            </div>
           </motion.div>
         )}
       </motion.div>

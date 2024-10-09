@@ -1,8 +1,8 @@
 /* styles.css */
 
 .question-box {
-  width: 80%;
-  max-width: 600px;
+  width: 90%;
+  max-width: 700px;
   margin: 20px auto;
   padding: 20px;
   border-radius: 10px;
@@ -32,4 +32,9 @@
   background-color: #e3f2fd;
   padding: 10px;
   border-radius: 5px;
+}
+
+.answer {
+  font-family: "HS-Regular";
+  font-size: 2rem;
 }

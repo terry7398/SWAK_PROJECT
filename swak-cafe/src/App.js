@@ -48,7 +48,7 @@ const App = () => {
       <Analytics />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/question/:questionID" element={<QuestionPage />} />
+        <Route path="/question/:questionID/:time" element={<QuestionPage />} />
         <Route path="/explanation/:questionID" element={<Explanation />} />
         {/* <Route path="/CrosswordGame" element={<CrosswordGame />} /> */}
       </Routes>

@@ -7,7 +7,7 @@ import Timer from "../components/Timer";
 import Question from "../components/Question";
 
 const QuestionPage = () => {
-  const { questionID } = useParams();
+  const { questionID, time } = useParams();
   const navigate = useNavigate();
   const [showAnswer, setShowAnswer] = useState(false);
   const [firstAnim, setFirstAnim] = useState(false);
@@ -38,7 +38,7 @@ const QuestionPage = () => {
   };
 
   useEffect(() => {
-    const animation = animate(count, 180, { duration: 3 });
+    const animation = animate(count, parseInt(time), { duration: 3 });
     animation.then(() => {
       setTimeout(() => {
         setFirstAnim(true);
@@ -89,8 +89,8 @@ const QuestionPage = () => {
             exit={{ y: -10, opacity: 0 }}
             transition={{ duration: 2 }}
           >
-            <ProgressBar duration={180} onComplete={handleTimeUp} />
-            <Timer duration={180} onComplete={handleTimeUp} />
+            <ProgressBar duration={parseInt(time)} onComplete={handleTimeUp} />
+            <Timer duration={parseInt(time)} onComplete={handleTimeUp} />
           </motion.div>
         )}
         {showAnswer && (

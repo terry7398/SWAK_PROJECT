@@ -2,20 +2,54 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "./HomePage.css";
+import questions from "../assets/question.json";
 
 const HomePage = () => {
   const navigate = useNavigate();
   const [isClick, setisClick] = useState(false);
 
   const getRandomNumber = () => {
-    let max = 7;
-    let res = Math.floor(Math.random() * max - 0.1) + 1;
-    return res;
+    const difficulty1 = questions.filter((q) => q.difficulty === 1);
+    const difficulty2 = questions.filter((q) => q.difficulty === 2);
+    const difficulty3 = questions.filter((q) => q.difficulty === 3);
+    const difficulty4 = questions.filter((q) => q.difficulty === 4);
+
+    const getRandomDifficulty = () => {
+      const random = Math.random();
+      if (random < 0.3) return 1;
+      else if (random < 0.6) return 2;
+      else if (random < 0.85) return 3;
+      else return 4;
+    };
+
+    const randomDifficulty = getRandomDifficulty();
+
+    let chosenList;
+    let time;
+    if (randomDifficulty === 1) {
+      chosenList = difficulty1;
+      time = 60;
+    } else if (randomDifficulty === 2) {
+      chosenList = difficulty2;
+      time = 120;
+    } else if (randomDifficulty === 3) {
+      chosenList = difficulty3;
+      time = 180;
+    } else if (randomDifficulty === 4) {
+      chosenList = difficulty4;
+      time = 240;
+    }
+
+    const randomIndex = Math.floor(Math.random() * chosenList.length);
+    return chosenList[randomIndex]?.id.toString() + "/" + time.toString();
   };
 
   const handleGetStarted = () => {
     setTimeout(() => {
-      navigate("/question/" + getRandomNumber());
+      let param = getRandomNumber();
+      if (param !== null) {
+        navigate("/question/" + param);
+      }
     }, 100);
   };
 

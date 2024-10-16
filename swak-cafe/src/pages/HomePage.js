@@ -17,11 +17,11 @@ const HomePage = () => {
 
     const getRandomDifficulty = () => {
       const random = Math.random();
-      if (random < 0.25) return 0;
-      else if (random < 0.5) return 1;
-      else if (random < 0.75) return 2;
-      else if (random < 0.9) return 3;
-      else return 4;
+      if (random < 0.25) return 1;
+      else if (random < 0.5) return 2;
+      else if (random < 0.75) return 3;
+      else if (random < 0.9) return 4;
+      else return 5;
     };
 
     const randomDifficulty = getRandomDifficulty();
@@ -29,24 +29,23 @@ const HomePage = () => {
     let chosenList;
     let time;
     if (randomDifficulty === 1) {
-      chosenList = difficulty1;
-      time = 100;
-    } else if (randomDifficulty === 2) {
-      chosenList = difficulty2;
-      time = 150;
-    } else if (randomDifficulty === 3) {
-      chosenList = difficulty3;
-      time = 200;
-    } else if (randomDifficulty === 4) {
-      chosenList = difficulty4;
-      time = 300;
-    } else if (randomDifficulty === 0) {
       chosenList = difficulty0;
       time = 60;
+    } else if (randomDifficulty === 2) {
+      chosenList = difficulty1;
+      time = 100;
+    } else if (randomDifficulty === 3) {
+      chosenList = difficulty2;
+      time = 150;
+    } else if (randomDifficulty === 4) {
+      chosenList = difficulty3;
+      time = 200;
+    } else if (randomDifficulty === 5) {
+      chosenList = difficulty4;
+      time = 300;
     }
-
     const randomIndex = Math.floor(Math.random() * chosenList.length);
-    return chosenList[randomIndex]?.id.toString() + "/" + time.toString();
+    return chosenList[randomIndex].id.toString() + "/" + time.toString();
   };
 
   const handleGetStarted = () => {

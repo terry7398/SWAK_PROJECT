@@ -16,9 +16,13 @@ const QuestionPage = () => {
   const count = useMotionValue(0);
   const rounded = useTransform(count, Math.round);
   const [answerInput, setAnswerInput] = useState("");
+  const [isad, setIsad] = useState(true);
 
   const handleCheckAnswer = () => {
     setShowAnswer(true);
+    setTimeout(() => {
+      setIsad(false);
+    }, 5000);
   };
 
   const handleTimeUp = () => {
@@ -62,14 +66,22 @@ const QuestionPage = () => {
         transition={{ duration: 1 }}
       >
         {!firstAnim && (
-          <motion.h1
-            className="start-anim-number"
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ duration: 1 }}
-          >
-            {rounded}
-          </motion.h1>
+          <>
+            <div className="box">
+              <span className="title">
+                내일 아침 8시 20분에 오케스트라 버스킹이 있습니다!
+              </span>
+              <p className="title">많은 관심 부탁드립니다!</p>
+            </div>
+            <motion.h1
+              className="start-anim-number"
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -10, opacity: 0 }}
+              transition={{ duration: 1 }}
+            >
+              {rounded}
+            </motion.h1>
+          </>
         )}
         {firstAnim && (
           <>

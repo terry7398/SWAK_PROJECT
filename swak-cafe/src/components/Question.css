@@ -26,6 +26,16 @@
   word-break: keep-all;
 }
 
+.question-source {
+  font-family: "NotoSansKR-VariableFont_wght";
+  font-size: 0.7em;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  color: #272727;
+  word-break: keep-all;
+  text-align: left;
+}
+
 .question-hint {
   font-family: "NotoSansKR-VariableFont_wght";
   color: #6d6d6d;

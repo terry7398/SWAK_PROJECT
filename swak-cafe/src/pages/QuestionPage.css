@@ -1,5 +1,6 @@
 .start-anim-number {
   font-size: 4rem;
+  text-align: center;
 }
 
 .button-container {
@@ -23,4 +24,24 @@ input {
   font-family: "NotoSansKR-VariableFont_wght";
   font-weight: 600;
   text-align: center;
+}
+
+.box {
+  width: 90%;
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.title {
+  font-family: "NotoSansKR-VariableFont_wght";
+  font-weight: 600;
+  font-size: 1.8em;
+  margin-bottom: 10px;
+  color: #272727;
+  word-break: keep-all;
 }

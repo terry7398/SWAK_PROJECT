@@ -40,6 +40,7 @@ const Question = ({ questionID, isAnswer, isExplanation, isRight, answer }) => {
     <div className="question-box">
       <h2 className="question-title"> {question.name}</h2>
       <b className="question-description">{convertBR(question.description)}</b>
+      <b className="question-source">{"출처 : " + question.source}</b>
     </div>
   );
 };

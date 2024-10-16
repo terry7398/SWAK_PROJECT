@@ -9,6 +9,7 @@ const HomePage = () => {
   const [isClick, setisClick] = useState(false);
 
   const getRandomNumber = () => {
+    const difficulty0 = questions.filter((q) => q.difficulty === 0);
     const difficulty1 = questions.filter((q) => q.difficulty === 1);
     const difficulty2 = questions.filter((q) => q.difficulty === 2);
     const difficulty3 = questions.filter((q) => q.difficulty === 3);
@@ -16,9 +17,10 @@ const HomePage = () => {
 
     const getRandomDifficulty = () => {
       const random = Math.random();
-      if (random < 0.3) return 1;
-      else if (random < 0.6) return 2;
-      else if (random < 0.85) return 3;
+      if (random < 0.25) return 0;
+      else if (random < 0.5) return 1;
+      else if (random < 0.75) return 2;
+      else if (random < 0.9) return 3;
       else return 4;
     };
 
@@ -28,16 +30,19 @@ const HomePage = () => {
     let time;
     if (randomDifficulty === 1) {
       chosenList = difficulty1;
-      time = 60;
+      time = 100;
     } else if (randomDifficulty === 2) {
       chosenList = difficulty2;
-      time = 120;
+      time = 150;
     } else if (randomDifficulty === 3) {
       chosenList = difficulty3;
-      time = 180;
+      time = 200;
     } else if (randomDifficulty === 4) {
       chosenList = difficulty4;
-      time = 240;
+      time = 300;
+    } else if (randomDifficulty === 0) {
+      chosenList = difficulty0;
+      time = 60;
     }
 
     const randomIndex = Math.floor(Math.random() * chosenList.length);

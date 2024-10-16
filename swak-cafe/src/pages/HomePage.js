@@ -66,7 +66,7 @@ const HomePage = () => {
       transition={{ duration: 1 }}
     >
       <div>
-        <h1 className="title">솩 3기 수학 카페</h1>
+        <h1 className="_title">솩 3기 수학 카페</h1>
       </div>
 
       <motion.button

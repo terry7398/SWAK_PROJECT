@@ -17,11 +17,14 @@ const HomePage = () => {
 
     const getRandomDifficulty = () => {
       const random = Math.random();
-      if (random < 0.25) return 1;
-      else if (random < 0.5) return 2;
-      else if (random < 0.75) return 3;
-      else if (random < 0.9) return 4;
-      else return 5;
+      // if (random < 0.25) return 1;
+      // else if (random < 0.5) return 2;
+      // else if (random < 0.75) return 3;
+      // else if (random < 0.9) return 4;
+      // else return 5;
+      if (random < 0.4) return 1;
+      else if (random < 0.7) return 2;
+      else return 3;
     };
 
     const randomDifficulty = getRandomDifficulty();
@@ -30,13 +33,16 @@ const HomePage = () => {
     let time;
     if (randomDifficulty === 1) {
       chosenList = difficulty0;
-      time = 60;
+      // time = 60;
+      time = 150;
     } else if (randomDifficulty === 2) {
       chosenList = difficulty1;
-      time = 100;
+      // time = 100;
+      time = 150;
     } else if (randomDifficulty === 3) {
       chosenList = difficulty2;
-      time = 150;
+      // time = 150;
+      time = 200;
     } else if (randomDifficulty === 4) {
       chosenList = difficulty3;
       time = 200;

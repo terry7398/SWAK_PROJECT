@@ -1,5 +1,5 @@
 import "./globals.css";
-import "../style/global.css";
+import "../style/Global.css";
 
 export const metadata = {
   title: "스피드 퀴즈 레이스",

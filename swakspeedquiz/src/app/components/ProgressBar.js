@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, easeIn } from "framer-motion";
-import "@/style/ProgressBar.css";
+import "../../style/ProgressBar.css";
 
 const ProgressBar = ({ duration, onComplete }) => {
   const [progress, setProgress] = useState(0);

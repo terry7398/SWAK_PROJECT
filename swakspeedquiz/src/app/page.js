@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import "@/style/Global.css";
+import "../style/Global.css";
 
 export default function HomePage() {
   const router = useRouter();

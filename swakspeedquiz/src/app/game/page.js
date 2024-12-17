@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import "@/style/game.css";
-import "@/style/popup.css";
+import "../../style/game.css";
+import "../../style/popup.css";
 import Timer from "../components/Timer.js";
 import ProgressBar from "../components/ProgressBar.js";
 import Modal from "react-modal";

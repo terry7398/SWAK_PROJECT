@@ -1,5 +1,5 @@
 import questions from "../assets/question.json";
-import "@/style/Question.css";
+import "../../style/Question.css";
 
 const Question = ({ questionID, isAnswer, isExplanation, isRight, answer }) => {
   const question = questions.find((q) => q.id === parseInt(questionID));

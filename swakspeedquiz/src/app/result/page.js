@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import "@/style/global.css";
+import "../../style/global.css";
 
 export default function Result() {
   return (

@@ -19,6 +19,13 @@ body {
   gap: 10px;
   width: 80%;
   max-width: 600px;
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #444;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: #1c1c1e;
+  border-radius: 8px;
 }
 
 .problem-box {
@@ -32,6 +39,7 @@ body {
   text-align: center;
   border-radius: 8px;
   margin: 5px 0;
+  word-wrap: keep-all;
 }
 
 button {
@@ -54,5 +62,6 @@ button:hover {
 }
 
 .problem-description {
-  font-size: x-large;
+  font-size: large;
+  word-wrap: keep-all;
 }

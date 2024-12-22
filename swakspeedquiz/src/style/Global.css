@@ -8,7 +8,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  transform: scale(0.75);
+  transform: scale(0.85);
 }
 
 button {

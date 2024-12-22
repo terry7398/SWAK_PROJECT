@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import "../../style/game.css";
 import "../../style/popup.css";
@@ -8,13 +8,22 @@ import Timer from "../components/Timer.js";
 import ProgressBar from "../components/ProgressBar.js";
 import Modal from "react-modal";
 
-export default function GamePage() {
+export default function Game() {
+  return (
+    <Suspense fallback={<div>로딩 중...</div>}>
+      <GamePage />
+    </Suspense>
+  );
+}
+
+export function GamePage() {
   const [countdown, setCountdown] = useState(3);
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [openModal, setOpenModal] = useState(false);
   const router = useRouter();
   const [time, setTime] = useState(0);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -25,9 +34,17 @@ export default function GamePage() {
   }, []);
 
   useEffect(() => {
-    fetch("/question1.json")
+    fetch(`/question${searchParams.get("ProblemNumber")}.json`)
       .then((res) => res.json())
       .then((data) => setQuestions(Object.entries(data)));
+
+    setTimeout(() => {
+      let { emptyFields, incorrectCount, stringFileds } = testAnswers();
+      let incorrectAnswer = emptyFields + incorrectCount + stringFileds;
+      router.push(
+        `/result?correctAnswer=${30 - incorrectAnswer}&issuccess=${false}`
+      );
+    }, 5000);
 
     const timer = setInterval(() => {
       setCountdown((prev) => (prev > 1 ? prev - 1 : 0));
@@ -40,9 +57,10 @@ export default function GamePage() {
     setOpenModal(false);
   };
 
-  const handleSubmit = () => {
+  const testAnswers = () => {
     let emptyFields = 0;
     let incorrectCount = 0;
+    let stringFileds = 0;
 
     questions.forEach(([id, question]) => {
       const correctAnswer = question[1];
@@ -50,11 +68,23 @@ export default function GamePage() {
 
       if (!userAnswer) {
         emptyFields += 1;
+      } else if (!/^\d+$/.test(userAnswer)) {
+        stringFileds += 1;
       } else if (userAnswer !== correctAnswer) {
         incorrectCount += 1;
       }
     });
 
+    return { emptyFields, incorrectCount, stringFileds };
+  };
+
+  const handleSubmit = () => {
+    let { emptyFields, incorrectCount, stringFileds } = testAnswers();
+
+    if (stringFileds > 0) {
+      alert(`문자로 된 답이 ${stringFileds}개 있습니다. 숫자로 입력해주세요.`);
+      return;
+    }
     if (emptyFields > 0) {
       alert(`입력하지 않은 답이 ${emptyFields}개 있습니다. 모두 입력해주세요.`);
       return;
@@ -100,6 +130,14 @@ export default function GamePage() {
               </motion.div>
             ))}
           </div>
+          <motion.h3
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+            style={{ marginTop: "10px" }}
+          >
+            문제의 답은 모두 숫자로 이루어져 있습니다. 숫자로만 입력해 주세요
+          </motion.h3>
           <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

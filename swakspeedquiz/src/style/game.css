@@ -39,7 +39,8 @@ body {
   text-align: center;
   border-radius: 8px;
   margin: 5px 0;
-  word-wrap: keep-all;
+  word-break: keep-all;
+  white-space: normal;
 }
 
 button {
@@ -63,5 +64,4 @@ button:hover {
 
 .problem-description {
   font-size: large;
-  word-wrap: keep-all;
 }

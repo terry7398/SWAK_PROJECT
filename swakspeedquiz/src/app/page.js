@@ -19,7 +19,11 @@ export default function HomePage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.5 }}
-        onClick={() => router.push("/game")}
+        onClick={() =>
+          router.push(
+            `/game?ProblemNumber=${process.env.NEXT_PUBLIC_PROBLEM_NUMBER}`
+          )
+        }
       >
         시작하기
       </motion.button>

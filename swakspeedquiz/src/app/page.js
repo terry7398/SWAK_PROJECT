@@ -1,10 +1,23 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
+import { Suspense } from "react";
 import "../style/Global.css";
 
-export default function HomePage() {
+export default function Home() {
+  return (
+    <Suspense fallback={<div>로딩 중...</div>}>
+      <HomePage />
+    </Suspense>
+  );
+}
+
+export function HomePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const problemNumber = searchParams.get("ProblemNumber");
+
   return (
     <div className="container">
       <motion.div
@@ -19,11 +32,7 @@ export default function HomePage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.5 }}
-        onClick={() =>
-          router.push(
-            `/game?ProblemNumber=${process.env.NEXT_PUBLIC_PROBLEM_NUMBER}`
-          )
-        }
+        onClick={() => router.push(`/game?ProblemNumber=${problemNumber}`)}
       >
         시작하기
       </motion.button>

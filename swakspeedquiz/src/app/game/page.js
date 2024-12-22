@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -18,71 +19,96 @@ export default function Game() {
 
 export function GamePage() {
   const [countdown, setCountdown] = useState(3);
-  const [questions, setQuestions] = useState([]);
+
   const [answers, setAnswers] = useState({});
   const [openModal, setOpenModal] = useState(false);
   const router = useRouter();
   const [time, setTime] = useState(0);
   const searchParams = useSearchParams();
+  const [question, setQuestion] = useState([]);
+  const tip =
+    "문제의 답은 모두 숫자로 이루어져 있습니다. \n숫자로만 입력해 주세요";
+
+  useEffect(() => {
+    setTimeout(() => {
+      handleFail();
+    }, 900000);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setTime((prev) => prev + 1);
     }, 1000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
-
-  useEffect(() => {
-    fetch(`/question${searchParams.get("ProblemNumber")}.json`)
-      .then((res) => res.json())
-      .then((data) => setQuestions(Object.entries(data)));
-
-    setTimeout(() => {
-      let { emptyFields, incorrectCount, stringFileds } = testAnswers();
-      let incorrectAnswer = emptyFields + incorrectCount + stringFileds;
-      router.push(
-        `/result?correctAnswer=${30 - incorrectAnswer}&issuccess=${false}`
-      );
-    }, 5000);
-
-    const timer = setInterval(() => {
-      setCountdown((prev) => (prev > 1 ? prev - 1 : 0));
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const closeModal = () => {
-    setOpenModal(false);
-  };
 
   const testAnswers = () => {
     let emptyFields = 0;
     let incorrectCount = 0;
-    let stringFileds = 0;
+    let stringFields = 0;
 
-    questions.forEach(([id, question]) => {
+    question.forEach(([id, question]) => {
       const correctAnswer = question[1];
       const userAnswer = answers[id]?.trim();
 
       if (!userAnswer) {
         emptyFields += 1;
       } else if (!/^\d+$/.test(userAnswer)) {
-        stringFileds += 1;
+        stringFields += 1;
       } else if (userAnswer !== correctAnswer) {
         incorrectCount += 1;
       }
     });
 
-    return { emptyFields, incorrectCount, stringFileds };
+    return { emptyFields, incorrectCount, stringFields };
+  };
+
+  const handleFail = () => {
+    const { emptyFields, incorrectCount, stringFields } = testAnswers();
+    const incorrectAnswer = emptyFields + incorrectCount + stringFields;
+    router.push(
+      `/result?correctAnswer=${30 - incorrectAnswer}&issuccess=${false}`
+    );
+  };
+
+  useEffect(() => {
+    const problemNumber = searchParams.get("ProblemNumber");
+
+    if (problemNumber) {
+      fetch(`/question${problemNumber}.json`)
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Failed to fetch questions");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          setQuestion(Object.entries(data));
+        })
+        .catch((error) => {
+          console.error("Error fetching questions:", error);
+        });
+    }
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => (prev > 1 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [searchParams]);
+
+  const closeModal = () => {
+    setOpenModal(false);
   };
 
   const handleSubmit = () => {
-    let { emptyFields, incorrectCount, stringFileds } = testAnswers();
+    const { emptyFields, incorrectCount, stringFields } = testAnswers();
 
-    if (stringFileds > 0) {
-      alert(`문자로 된 답이 ${stringFileds}개 있습니다. 숫자로 입력해주세요.`);
+    if (stringFields > 0) {
+      alert(`문자로 된 답이 ${stringFields}개 있습니다. 숫자로 입력해주세요.`);
       return;
     }
     if (emptyFields > 0) {
@@ -117,26 +143,32 @@ export function GamePage() {
         <>
           <Timer duration={900} />
           <ProgressBar duration={900} />
-          <div className="problem-grid">
-            {questions.map(([id, question]) => (
-              <motion.div
-                key={id}
-                className="problem-box"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <p className="problem-description">{question[0]}</p>
-              </motion.div>
-            ))}
-          </div>
+          {question.length > 0 && (
+            <div className="problem-grid">
+              {question.map(([id, question]) => (
+                <motion.div
+                  key={id}
+                  className="problem-box"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <p className="problem-description">{question[0]}</p>
+                </motion.div>
+              ))}
+            </div>
+          )}
           <motion.h3
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-            style={{ marginTop: "10px" }}
+            style={{
+              marginTop: "10px",
+              whiteSpace: "pre-line",
+              textAlign: "center",
+            }}
           >
-            문제의 답은 모두 숫자로 이루어져 있습니다. 숫자로만 입력해 주세요
+            {tip}
           </motion.h3>
           <motion.button
             initial={{ opacity: 0 }}
@@ -154,17 +186,18 @@ export function GamePage() {
             overlayClassName="overlay"
           >
             <div className="popup-grid">
-              {questions.map(([id]) => (
+              {question.map(([id]) => (
                 <input
                   key={id}
                   placeholder={`${id}번 정답`}
                   className="input-box"
-                  onChange={(e) =>
+                  value={answers[id] || ""}
+                  onChange={(e) => {
                     setAnswers({
                       ...answers,
                       [id]: e.target.value,
-                    })
-                  }
+                    });
+                  }}
                 />
               ))}
             </div>

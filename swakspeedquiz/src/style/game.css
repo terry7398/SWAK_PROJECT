@@ -9,7 +9,7 @@ body {
   align-items: center;
   flex-direction: column;
   height: 100vh;
-  transform: scale(0.75);
+  transform: scale(0.85);
 }
 
 .problem-grid {

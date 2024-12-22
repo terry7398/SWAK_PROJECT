@@ -18,7 +18,6 @@ export function ResultPage() {
 
   const time = searchParams.get("time");
   const issuccess = searchParams.get("issuccess") === "true" ? true : false;
-  const correctAnswer = searchParams.get("correctAnswer");
 
   return (
     <div className="container">
@@ -39,7 +38,6 @@ export function ResultPage() {
           <div>
             <h1>실패...</h1>
             <br />
-            <h2>맞힌 개수 : {correctAnswer}</h2>
           </div>
         )}
       </motion.div>

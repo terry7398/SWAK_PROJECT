@@ -78,7 +78,7 @@ export function GamePage() {
     const problemNumber = searchParams.get("ProblemNumber");
 
     if (problemNumber) {
-      fetch(`/question${problemNumber}.json`)
+      fetch(`/question1.json`)
         .then((res) => {
           if (!res.ok) {
             throw new Error("Failed to fetch questions");

@@ -1,0 +1,5 @@
+streamlit
+streamlit-extras
+st-gsheets-connection
+numpy
+streamlit-aggrid

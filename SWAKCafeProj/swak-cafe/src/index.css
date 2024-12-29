@@ -1,0 +1,25 @@
+body {
+  font-family: "HSSantokki-Regular";
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+@font-face {
+  font-family: "HS-Regular";
+  src: url("https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/HS-Regular.woff")
+    format("woff");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "NotoSansKR-Variable";
+  font-weight: normal;
+  src: url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap")
+    format("woff");
+}

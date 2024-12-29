@@ -1,0 +1,23 @@
+._title {
+  font-family: "HS-Regular";
+  font-size: 6rem;
+}
+
+button {
+  font-family: "HS-Regular";
+  width: 10rem;
+  height: 6rem;
+  background: #57eb64;
+  color: #000000;
+  border: none;
+  padding: 15px 25px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 2rem;
+}
+
+.button-back {
+  background: #57eb64;
+  display: flex;
+  align-items: center;
+}
